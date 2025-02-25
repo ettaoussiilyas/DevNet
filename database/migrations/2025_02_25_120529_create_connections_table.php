@@ -13,7 +13,12 @@ return new class extends Migration
     {
         Schema::create('connections', function (Blueprint $table) {
             $table->id();
+            $table->integer('sender_id');
+            $table->integer('receiver_id');
+            $table->enum('status', ['pending', 'accepted', 'rejected']);
             $table->timestamps();
+            $table->foreign('sender_id')->references('id')->on('users');
+            $table->foreign('receiver_id')->references('id')->on('users');
         });
     }
 

@@ -2,16 +2,25 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Connection;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class ConnectionSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        //
+        $users = User::all();
+
+        foreach ($users as $user) {
+            $receivers = $users->except($user->id)->random(3);
+            foreach ($receivers as $receiver) {
+                Connection::create([
+                    'sender_id' => $user->id,
+                    'receiver_id' => $receiver->id,
+                    'status' => fake()->randomElement(['pending', 'accepted', 'rejected'])
+                ]);
+            }
+        }
     }
 }

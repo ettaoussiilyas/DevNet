@@ -1,20 +1,20 @@
-<mxfile host="drawio-plugin" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" modified="2025-02-25T12:07:08.947Z" version="22.1.22" etag="ekCab_uIeytaMhF509Xf" type="embed" pages="2">
+<mxfile host="drawio-plugin" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" modified="2025-02-25T12:19:54.148Z" version="22.1.22" etag="-7Pq56goXQDZ1mCx-xO1" type="embed" pages="2">
   <diagram name="Class" id="WVlTkhtA7nmS8mmYbebe">
-    <mxGraphModel dx="1121" dy="1255" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1316" dy="1508" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="mlAY22oYGntLQYyVNmdI-1" value="User" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="240" y="-40" width="160" height="250" as="geometry" />
+          <mxGeometry x="240" y="-40" width="160" height="254" as="geometry" />
         </mxCell>
         <mxCell id="mlAY22oYGntLQYyVNmdI-2" value="&lt;div&gt;&lt;div&gt;-id: int&lt;/div&gt;&lt;div&gt;-email: String&lt;/div&gt;&lt;div&gt;-password: String&lt;/div&gt;&lt;div&gt;-fullName: String&lt;/div&gt;&lt;div&gt;-biography: String&lt;/div&gt;&lt;div&gt;-skills: List&amp;lt;Skill&amp;gt;&lt;/div&gt;&lt;div&gt;-githubProfile: String&lt;/div&gt;&lt;div&gt;-created_at: DateTime&lt;/div&gt;&lt;/div&gt;&lt;div&gt;-updated_at : DateTime&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="mlAY22oYGntLQYyVNmdI-1" vertex="1">
           <mxGeometry y="26" width="160" height="144" as="geometry" />
         </mxCell>
         <mxCell id="mlAY22oYGntLQYyVNmdI-3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="mlAY22oYGntLQYyVNmdI-1" vertex="1">
-          <mxGeometry y="170" width="160" height="8" as="geometry" />
+          <mxGeometry y="170" width="160" height="12" as="geometry" />
         </mxCell>
         <mxCell id="mlAY22oYGntLQYyVNmdI-4" value="&lt;div&gt;+createPost()&lt;/div&gt;&lt;div&gt;+updateProfile()&lt;/div&gt;&lt;div&gt;+addConnection()&lt;/div&gt;&lt;div&gt;+removeConnection()&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="mlAY22oYGntLQYyVNmdI-1" vertex="1">
-          <mxGeometry y="178" width="160" height="72" as="geometry" />
+          <mxGeometry y="182" width="160" height="72" as="geometry" />
         </mxCell>
         <mxCell id="mlAY22oYGntLQYyVNmdI-5" value="Post" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="-186" y="-10" width="160" height="230" as="geometry" />

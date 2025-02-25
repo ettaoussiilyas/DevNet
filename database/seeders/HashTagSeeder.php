@@ -2,16 +2,17 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\HashTag;
 use Illuminate\Database\Seeder;
 
 class HashTagSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        //
+        $tags = ['PHP', 'Laravel', 'JavaScript', 'Vue.js', 'React', 'Python', 'Java', 'DevOps'];
+
+        foreach ($tags as $tag) {
+            HashTag::create(['name' => $tag]);
+        }
     }
 }

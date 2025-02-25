@@ -2,12 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Models\Comment;
+use App\Models\Like;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
-class CommentSeeder extends Seeder
+class LikeSeeder extends Seeder
 {
     public function run(): void
     {
@@ -15,12 +15,14 @@ class CommentSeeder extends Seeder
         $users = User::all();
 
         foreach ($posts as $post) {
-            Comment::factory()
-                ->count(3)
-                ->create([
+            $likers = $users->random(rand(1, 5));
+            foreach ($likers as $liker) {
+                Like::create([
+                    'liker_id' => $liker->id,
                     'post_id' => $post->id,
-                    'user_id' => $users->random()->id
+                    'like' => true
                 ]);
+            }
         }
     }
 }

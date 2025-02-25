@@ -11,14 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('comments', function (Blueprint $table) {
+        Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-            $table->string('comment');
+            $table->string('type');
+            $table->string('content');
             $table->integer('user_id');
             $table->integer('post_id');
+            $table->integer('comment_id')->nullable();
+            $table->integer('connection_id')->nullable();
+            $table->boolean('isread')->default(false);
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');
+            $table->foreign('comment_id')->references('id')->on('comments')->onDelete('cascade');
+            $table->foreign('connection_id')->references('id')->on('connections')->onDelete('cascade');
         });
     }
 
@@ -27,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('comments');
+        Schema::dropIfExists('notifications');
     }
 };
