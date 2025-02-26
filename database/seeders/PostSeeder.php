@@ -10,14 +10,13 @@ class PostSeeder extends Seeder
 {
     public function run(): void
     {
-        $users = User::all();
-
-        foreach ($users as $user) {
+        // Create 2-5 posts for each user
+        User::all()->each(function ($user) {
             Post::factory()
-                ->count(5)
+                ->count(fake()->numberBetween(2, 5))
                 ->create([
                     'user_id' => $user->id
                 ]);
-        }
+        });
     }
 }

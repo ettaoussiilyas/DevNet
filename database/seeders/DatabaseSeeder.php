@@ -13,8 +13,8 @@ class DatabaseSeeder extends Seeder
             HashTagSeeder::class,
             PostSeeder::class,
             CommentSeeder::class,
-            ConnectionSeeder::class,
-            LikeSeeder::class
+            NotificationSeeder::class,
+            MessageSeeder::class,
         ]);
     }
 }

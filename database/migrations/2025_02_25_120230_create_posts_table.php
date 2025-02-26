@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('user_id');
             $table->string('content', 1000);
+            $table->string('type')->default('post');
             $table->string('images_url')->nullable();
             $table->string('video_url')->nullable();
             $table->timestamps();

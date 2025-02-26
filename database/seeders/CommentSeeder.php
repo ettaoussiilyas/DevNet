@@ -11,16 +11,13 @@ class CommentSeeder extends Seeder
 {
     public function run(): void
     {
-        $posts = Post::all();
-        $users = User::all();
-
-        foreach ($posts as $post) {
+        Post::all()->each(function ($post) {
             Comment::factory()
-                ->count(3)
+                ->count(fake()->numberBetween(0, 3))
                 ->create([
                     'post_id' => $post->id,
-                    'user_id' => $users->random()->id
+                    'user_id' => User::inRandomOrder()->first()->id,
                 ]);
-        }
+        });
     }
 }
