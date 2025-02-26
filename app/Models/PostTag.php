@@ -5,8 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PostTag extends Model
+class Post extends Model
 {
-    /** @use HasFactory<\Database\Factories\PostTagFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'user_id',
+        'content',
+        'images_url',
+        'video_url',
+        'type'
+    ];
 }
