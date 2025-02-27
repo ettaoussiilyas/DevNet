@@ -39,7 +39,7 @@ class ProfileController extends Controller
                     ->exists()
             );
 
-        return view('profile', compact('user', 'stats', 'isOwnProfile', 'isConnected'));
+        return view('profile.profile', compact('user', 'stats', 'isOwnProfile', 'isConnected'));
     }
 
 
