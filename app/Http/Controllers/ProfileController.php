@@ -6,12 +6,14 @@ use App\Models\User;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use phpDocumentor\Reflection\Project;
 
 class ProfileController extends Controller
 {
     public function show($userId = null): View
     {
         $user = $userId ? User::findOrFail($userId) : auth()->user();
+//        $projects = $user->projects()->count();
 
         $stats = [
             // Count both sent and received accepted connections
@@ -20,7 +22,7 @@ class ProfileController extends Controller
                     ->wherePivot('status', 'accepted')
                     ->count(),
             'posts_count' => $user->posts()->count(),
-            'projects_count' => $user->posts()->where('type', 'project')->count(),
+            'projects_count' => $user->projects()->count(),
         ];
 
         $isOwnProfile = $userId === null || $userId == auth()->id();

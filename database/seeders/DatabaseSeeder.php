@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Project;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -15,6 +16,7 @@ class DatabaseSeeder extends Seeder
             CommentSeeder::class,
             NotificationSeeder::class,
             MessageSeeder::class,
+            ProjectSeeder::class,
         ]);
     }
 }

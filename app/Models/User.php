@@ -74,4 +74,9 @@ class User extends Authenticatable
             ->wherePivot('status', 'pending');
     }
 
+    public function projects(): hasMany
+    {
+        return $this->hasMany(Project::class, 'user_id');
+    }
+
 }
