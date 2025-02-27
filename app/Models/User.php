@@ -57,10 +57,15 @@ class User extends Authenticatable
     }
 
     // Get skills as array
+//    public function getSkillsArrayAttribute(): array
+//    {
+//        return $this->skills ? explode(',', $this->skills) : [];
+//    }
     public function getSkillsArrayAttribute(): array
     {
-        return $this->skills ? explode(',', $this->skills) : [];
+        return $this->skills ? array_map('trim', explode(',', $this->skills)) : [];
     }
+
 
     public function pendingConnections()
     {

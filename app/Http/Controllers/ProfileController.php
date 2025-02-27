@@ -45,15 +45,16 @@ class ProfileController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'biography' => 'nullable|string|max:1000',
-            'skills' => 'nullable|string',
-            'gitProfile' => 'nullable|url|max:255',
-            'avatar' => 'nullable|image|max:2048',
-        ]);
-
         $user = auth()->user();
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'biography' => ['nullable', 'string', 'max:1000'],
+            'skills' => ['nullable', 'string', 'max:1000'],
+            'gitProfile' => ['nullable', 'url', 'max:1000'],
+            'avatar' => ['nullable', 'image', 'max:2048'], // 2MB max
+        ]);
 
         if ($request->hasFile('avatar')) {
             $path = $request->file('avatar')->store('avatars', 'public');
@@ -62,7 +63,7 @@ class ProfileController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route('profile')->with('status', 'Profile updated successfully!');
+        return redirect()->route('profile', $user)->with('status', 'profile-updated');
     }
 
     public function connect(User $user): RedirectResponse
@@ -93,10 +94,16 @@ class ProfileController extends Controller
     }
 
 
+//    public function edit(): View
+//    {
+//        return view('profile.edit', [
+//            'user' => auth()->user()
+//        ]);
+//    }
     public function edit(): View
     {
-        return view('profile.edit', [
-            'user' => auth()->user()
-        ]);
+        $user = auth()->user();
+        return view('profile.edit', compact('user'));
     }
+
 }
