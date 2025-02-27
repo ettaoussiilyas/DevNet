@@ -72,10 +72,12 @@ class ProfileController extends Controller
     }
 
 
-    public function edit(): View
+    public function edit(Request $request): View
     {
-        $user = auth()->user();
-        return view('profile.edit', compact('user'));
+        return view('profile.edit', [
+            'user' => $request->user(),
+            'projects' => $request->user()->projects
+        ]);
     }
 
     public function deleteAvatar(): RedirectResponse

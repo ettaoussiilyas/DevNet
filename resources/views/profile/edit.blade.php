@@ -1,146 +1,132 @@
 <x-app-layout>
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="space-y-6">
-                        @csrf
-                        @method('patch')
+    <div class="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <!-- Header Section -->
+        <div class="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Profile Settings</h1>
+                <p class="mt-2 text-gray-600 dark:text-gray-400">Manage your personal information and projects</p>
+            </div>
+        </div>
 
-                        <!-- Profile Photo Section -->
-                        <div class="flex flex-col items-center space-y-4">
-                            <div class="relative group">
-                                <div class="relative w-32 h-32 rounded-full overflow-hidden border-4 border-white dark:border-gray-700 shadow-lg">
-                                    @if($user->avatar)
-                                        <img src="{{ $user->avatar }}"
-                                             alt="{{ $user->name }}"
-                                             class="w-full h-full object-cover">
-                                    @else
-                                        <div class="w-full h-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
-                                            <span class="text-4xl font-bold text-white">{{ substr($user->name, 0, 1) }}</span>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-12 gap-6">
+                <!-- Sidebar Navigation -->
+                <div class="col-span-12 lg:col-span-3">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4">
+                        <nav class="space-y-2">
+                            <a href="#profile" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg bg-indigo-50 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                                Profile Information
+                            </a>
+                            <a href="#projects" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                                </svg>
+                                Projects
+                            </a>
+                            <a href="#skills" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                </svg>
+                                Skills & Expertise
+                            </a>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-span-12 lg:col-span-9 space-y-6">
+                    <!-- Profile Section -->
+                    <section id="profile" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+                        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Profile Information</h2>
+                        </div>
+
+                        <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="p-6">
+                            @csrf
+                            @method('patch')
+
+                            <!-- Avatar Upload -->
+                            <div class="flex flex-col items-center mb-8">
+                                <div class="relative group">
+                                    <div class="relative w-40 h-40 rounded-full overflow-hidden border-4 border-indigo-500/30 dark:border-indigo-400/30 shadow-2xl">
+                                        @if($user->avatar)
+                                            <img src="{{ $user->avatar }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+                                        @else
+                                            <div class="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                                                <span class="text-5xl font-bold text-white">{{ substr($user->name, 0, 1) }}</span>
+                                            </div>
+                                        @endif
+
+                                        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                            <label for="avatar" class="cursor-pointer p-2 bg-white/20 rounded-full hover:bg-white/30 transition-colors">
+                                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                </svg>
+                                            </label>
                                         </div>
-                                    @endif
-
-                                    <!-- Hover Overlay -->
-                                    <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                        <label for="avatar" class="cursor-pointer">
-                                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            </svg>
-                                        </label>
                                     </div>
-                                </div>
 
-                                @if($user->avatar)
-                                    <!-- Delete Button -->
-                                    <button type="button"
-                                            onclick="document.getElementById('remove_avatar').submit()"
-                                            class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-2 shadow-lg hover:bg-red-600 transition-colors duration-200">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                        </svg>
-                                    </button>
-                                @endif
+                                    <input type="file" name="avatar" id="avatar" class="hidden" accept="image/*" onchange="previewImage(this)">
+                                </div>
                             </div>
 
-                            <input type="file"
-                                   name="avatar"
-                                   id="avatar"
-                                   accept="image/*"
-                                   class="hidden"
-                                   onchange="previewImage(this)">
+                            <!-- Form Grid -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Name -->
+                                <div class="space-y-2">
+                                    <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
+                                    <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}"
+                                           class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                                </div>
 
-                            <p class="text-sm text-gray-500 dark:text-gray-400">
-                                Click the image to update your profile photo
-                            </p>
-                            @error('avatar')
-                            <p class="text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
+                                <!-- Email -->
+                                <div class="space-y-2">
+                                    <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
+                                    <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}"
+                                           class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                                </div>
 
-                        <!-- Name -->
-                        <div class="space-y-2">
-                            <x-input-label for="name" value="Name" />
-                            <x-text-input id="name"
-                                          name="name"
-                                          type="text"
-                                          class="mt-1 block w-full"
-                                          :value="old('name', $user->name)"
-                                          required
-                                          autofocus />
-                            <x-input-error class="mt-2" :messages="$errors->get('name')" />
-                        </div>
+                                <!-- GitHub Profile -->
+                                <div class="space-y-2">
+                                    <label for="gitProfile" class="block text-sm font-medium text-gray-700 dark:text-gray-300">GitHub Profile</label>
+                                    <input type="url" id="gitProfile" name="gitProfile" value="{{ old('gitProfile', $user->gitProfile) }}"
+                                           class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                                </div>
 
-                        <!-- Email -->
-                        <div class="space-y-2">
-                            <x-input-label for="email" value="Email" />
-                            <x-text-input id="email"
-                                          name="email"
-                                          type="email"
-                                          class="mt-1 block w-full"
-                                          :value="old('email', $user->email)"
-                                          required />
-                            <x-input-error class="mt-2" :messages="$errors->get('email')" />
-                        </div>
+                                <!-- Skills -->
+                                <div class="space-y-2">
+                                    <label for="skills" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Skills</label>
+                                    <input type="text" id="skills" name="skills" value="{{ old('skills', $user->skills) }}"
+                                           placeholder="e.g. PHP, Laravel, Vue.js"
+                                           class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                                </div>
 
-                        <!-- Biography -->
-                        <div class="space-y-2">
-                            <x-input-label for="biography" value="About Me" />
-                            <textarea id="biography"
-                                      name="biography"
-                                      rows="4"
-                                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
-                            >{{ old('biography', $user->biography) }}</textarea>
-                            <x-input-error class="mt-2" :messages="$errors->get('biography')" />
-                        </div>
+                                <!-- Biography -->
+                                <div class="md:col-span-2 space-y-2">
+                                    <label for="biography" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Biography</label>
+                                    <textarea id="biography" name="biography" rows="4"
+                                              class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent dark:bg-gray-700 dark:text-white">{{ old('biography', $user->biography) }}</textarea>
+                                </div>
+                            </div>
 
-                        <!-- Skills -->
-                        <div class="space-y-2">
-                            <x-input-label for="skills" value="Skills" />
-                            <x-text-input id="skills"
-                                          name="skills"
-                                          type="text"
-                                          class="mt-1 block w-full"
-                                          :value="old('skills', $user->skills)"
-                                          placeholder="PHP, Laravel, JavaScript, Vue.js" />
-                            <x-input-error class="mt-2" :messages="$errors->get('skills')" />
-                        </div>
+                            <!-- Save Button -->
+                            <div class="mt-6 flex justify-end">
+                                <button type="submit"
+                                        class="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium rounded-lg shadow-lg hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105">
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </section>
 
-                        <!-- GitHub Profile -->
-                        <div class="space-y-2">
-                            <x-input-label for="gitProfile" value="GitHub Profile" />
-                            <x-text-input id="gitProfile"
-                                          name="gitProfile"
-                                          type="url"
-                                          class="mt-1 block w-full"
-                                          :value="old('gitProfile', $user->gitProfile)"
-                                          placeholder="https://github.com/username" />
-                            <x-input-error class="mt-2" :messages="$errors->get('gitProfile')" />
-                        </div>
-
-                        <!-- Submit Button -->
-                        <div class="flex items-center gap-4 pt-4">
-                            <button type="submit"
-                                    class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg
-                                           hover:from-blue-600 hover:to-purple-600 focus:outline-none focus:ring-2
-                                           focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200">
-                                Save Changes
-                            </button>
-
-                            @if (session('status') === 'profile-updated')
-                                <p class="text-sm text-green-600 dark:text-green-400">
-                                    ✓ Saved successfully
-                                </p>
-                            @endif
-                        </div>
-                    </form>
-
-                    <!-- Separate Avatar Deletion Form -->
-                    <form id="remove_avatar" method="POST" action="{{ route('profile.avatar.delete') }}" class="hidden">
-                        @csrf
-                        @method('DELETE')
-                    </form>
+                    <!-- Projects Section -->
+                    <div id="projects" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+                        @include('project.edit', ['projects' => $projects])
+                    </div>
                 </div>
             </div>
         </div>
@@ -150,19 +136,18 @@
         function previewImage(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
-
                 reader.onload = function(e) {
-                    const container = input.closest('.relative').querySelector('img, div');
-                    if (container.tagName === 'IMG') {
-                        container.src = e.target.result;
+                    const image = input.closest('.relative').querySelector('img') ||
+                        input.closest('.relative').querySelector('div');
+                    if (image.tagName === 'IMG') {
+                        image.src = e.target.result;
                     } else {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.classList.add('w-full', 'h-full', 'object-cover');
-                        container.parentNode.replaceChild(img, container);
+                        const newImg = document.createElement('img');
+                        newImg.src = e.target.result;
+                        newImg.classList.add('w-full', 'h-full', 'object-cover');
+                        image.parentNode.replaceChild(newImg, image);
                     }
                 }
-
                 reader.readAsDataURL(input.files[0]);
             }
         }

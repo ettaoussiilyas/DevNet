@@ -16,6 +16,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile/{user?}', [ProfileController::class, 'show'])->name('profile');
     Route::post('/profile/{user}/connect', [ProfileController::class, 'connect'])->name('profile.connect');
     Route::delete('/profile/avatar', [ProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
+    Route::resource('projects', ProjectController::class);
 
 });
 

@@ -10,7 +10,12 @@ class Project extends Model
     protected $fillable = [
         'name',
         'descreption',
+        'technologies',
         'user_id'
+    ];
+
+    protected $casts = [
+        'technologies' => 'array'  // Cast technologies to array
     ];
 
 
