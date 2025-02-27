@@ -5,7 +5,9 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
                 <div class="flex items-center space-x-4">
                     @if($user->avatar)
-                        <img src="{{ Storage::url($user->avatar) }}" alt="{{ $user->name }}" class="w-24 h-24 rounded-full">
+                        <img src="{{ $user->avatar }}"
+                             alt="{{ $user->name }}"
+                             class="w-24 h-24 rounded-full object-cover">
                     @else
                         <div class="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center">
                             <span class="text-2xl">{{ substr($user->name, 0, 1) }}</span>

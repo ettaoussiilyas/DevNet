@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
-use phpDocumentor\Reflection\Project;
+
 
 class ProfileController extends Controller
 {
@@ -43,29 +44,6 @@ class ProfileController extends Controller
     }
 
 
-    public function update(Request $request): RedirectResponse
-    {
-        $user = auth()->user();
-
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
-            'biography' => ['nullable', 'string', 'max:1000'],
-            'skills' => ['nullable', 'string', 'max:1000'],
-            'gitProfile' => ['nullable', 'url', 'max:1000'],
-            'avatar' => ['nullable', 'image', 'max:2048'], // 2MB max
-        ]);
-
-        if ($request->hasFile('avatar')) {
-            $path = $request->file('avatar')->store('avatars', 'public');
-            $validated['avatar'] = $path;
-        }
-
-        $user->update($validated);
-
-        return redirect()->route('profile', $user)->with('status', 'profile-updated');
-    }
-
     public function connect(User $user): RedirectResponse
     {
         if (auth()->id() === $user->id) {
@@ -94,16 +72,69 @@ class ProfileController extends Controller
     }
 
 
-//    public function edit(): View
-//    {
-//        return view('profile.edit', [
-//            'user' => auth()->user()
-//        ]);
-//    }
     public function edit(): View
     {
         $user = auth()->user();
         return view('profile.edit', compact('user'));
     }
+
+    public function deleteAvatar(): RedirectResponse
+    {
+        $user = auth()->user();
+
+        if ($user->avatar) {
+            try {
+                $path = str_replace('/storage/', '', $user->avatar);
+                if (Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->delete($path);
+                }
+                $user->update(['avatar' => null]);
+                return back()->with('status', 'avatar-deleted');
+            } catch (\Exception $e) {
+                return back()->withErrors(['avatar' => 'Failed to delete avatar: ' . $e->getMessage()]);
+            }
+        }
+
+        return back()->with('status', 'avatar-deleted');
+    }
+
+
+    public function update(Request $request): RedirectResponse
+    {
+        $user = auth()->user();
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'biography' => ['nullable', 'string', 'max:1000'],
+            'skills' => ['nullable', 'string', 'max:1000'],
+            'gitProfile' => ['nullable', 'url', 'max:1000'],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            try {
+                // Delete old avatar if exists
+                if ($user->avatar) {
+                    $oldPath = str_replace('/storage/', '', $user->avatar);
+                    if (Storage::disk('public')->exists($oldPath)) {
+                        Storage::disk('public')->delete($oldPath);
+                    }
+                }
+
+                // Store new avatar
+                $path = $request->file('avatar')->store('avatars', 'public');
+                $validated['avatar'] = '/storage/' . $path;
+
+            } catch (\Exception $e) {
+                return back()->withErrors(['avatar' => 'Failed to upload avatar: ' . $e->getMessage()]);
+            }
+        }
+
+        $user->update($validated);
+
+        return back()->with('status', 'profile-updated');
+    }
+
 
 }
