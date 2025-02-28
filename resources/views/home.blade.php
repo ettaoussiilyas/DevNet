@@ -1,140 +1,226 @@
 <x-app-layout>
-    <div class="max-w-4xl mx-auto px-4 py-8">
-        <!-- Create Post Button -->
-        <button onclick="openPostModal()"
-                class="w-full bg-white rounded-lg shadow p-4 text-left text-gray-500 hover:bg-gray-50 mb-6">
-            What's on your mind?
-        </button>
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="flex gap-8">
+            <!-- Left Sidebar - Profile Card -->
+            <div class="w-1/4">
+                <div class="bg-white rounded-lg shadow sticky top-8">
+                    <!-- Cover Image -->
+                    <div class="h-24 bg-gradient-to-r from-blue-500 to-blue-600 rounded-t-lg"></div>
 
-        <!-- Add this inside the modal header 3alam-->
-        <div class="p-4 border-b flex justify-between items-center">
-            <h2 class="text-xl font-semibold">Create Post</h2>
-            <button type="button" onclick="closePostModal()" class="text-gray-500 hover:text-gray-700">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-        </div>
+                    <!-- Profile Section -->
+                    <div class="px-4 pb-4 relative">
+                        <!-- Avatar -->
+                        <div class="absolute -top-10 left-1/2 transform -translate-x-1/2">
+                            <img src="{{ auth()->user()->avatar }}"
+                                 class="w-20 h-20 rounded-full border-4 border-white shadow-lg">
+                        </div>
 
-        <!-- Posts Feed -->
-        <div class="space-y-6">
-            @foreach($posts as $post)
-                <div class="bg-white rounded-lg shadow">
-                    <div class="p-4">
-                        <!-- Post Header -->
-                        <div class="flex items-center space-x-3 mb-4">
-                            <img src="{{ $post->user->avatar }}" class="w-10 h-10 rounded-full">
-                            <div>
-                                <h3 class="font-semibold">{{ $post->user->name }}</h3>
-                                <p class="text-sm text-gray-500">{{ $post->created_at->diffForHumans() }}</p>
+                        <!-- User Info -->
+                        <div class="pt-12 text-center">
+                            <h2 class="font-bold text-xl">{{ auth()->user()->name }}</h2>
+                            <p class="text-gray-600 text-sm">{{ auth()->user()->email }}</p>
+
+                            <!-- Stats -->
+                            <div class="mt-4 grid grid-cols-3 gap-4 border-t pt-4">
+                                <div>
+                                    <div class="font-bold">{{ auth()->user()->posts()->count() }}</div>
+                                    <div class="text-xs text-gray-500">Posts</div>
+                                </div>
+                                <div>
+                                    <div class="font-bold">{{ auth()->user()->connections()->count() }}</div>
+                                    <div class="text-xs text-gray-500">Connections</div>
+                                </div>
+                                <div>
+                                    <div class="font-bold">{{ auth()->user()->likes()->count() }}</div>
+                                    <div class="text-xs text-gray-500">Likes</div>
+                                </div>
+                            </div>
+
+                            <!-- Quick Links -->
+                            <div class="mt-4 space-y-2">
+                                <a href="{{ route('profile') }}"
+                                   class="block text-sm text-blue-600 hover:text-blue-800">
+                                    View Full Profile
+                                </a>
+                                <a href="{{ route('posts.my') }}"
+                                   class="block text-sm text-blue-600 hover:text-blue-800">
+                                    My Posts
+                                </a>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
 
-                        <!-- Post Content -->
-                        @if($post->type === 'snippet')
-                            <div class="mb-4">{{ $post->content }}</div>
-                            <pre class="bg-gray-800 text-white p-4 rounded"><code>{{ $post->code }}</code></pre>
-                        @else
-                            <p class="mb-4">{{ $post->content }}</p>
-                            @if($post->image)
-                                <img src="{{ $post->image }}" class="rounded-lg max-h-96 w-full object-cover">
-                            @endif
-                        @endif
+            <!-- Main Content -->
+            <div class="flex-1">
+                <!-- Create Post Card -->
+                <div class="bg-white rounded-lg shadow mb-6">
+                    <div class="p-4">
+                        <button onclick="openPostModal()"
+                                class="w-full bg-gray-50 rounded-lg p-4 text-left text-gray-500 hover:bg-gray-100 transition">
+                            <div class="flex items-center space-x-4">
+                                <img src="{{ auth()->user()->avatar }}" class="w-10 h-10 rounded-full">
+                                <span>What's on your mind?</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
 
-                        <!-- Post Actions -->
-                        <div class="flex items-center space-x-4 mt-4 pt-4 border-t">
-                            <form action="{{ route('posts.like', $post) }}" method="POST" class="inline like-form">
-                                @csrf
-                                <button type="submit"
-                                        class="text-gray-500 hover:text-blue-500 {{ $post->likes()->where('liker_id', auth()->id())->exists() ? 'text-blue-500' : '' }}">
-                                    Like ({{ $post->likes()->count() }})
-                                </button>
-                            </form>
-                            <button onclick="toggleComments('{{ $post->id }}')" class="text-gray-500 hover:text-blue-500">
-                                Comment ({{ $post->comments_count }})
-                            </button>
-                        </div>
+                <!-- Posts Feed -->
+                <div class="space-y-6">
+                    @foreach($posts as $post)
+                        <div class="bg-white rounded-lg shadow">
+                            <!-- Post Header -->
+                            <div class="p-4 flex items-center space-x-4">
+                                <img src="{{ $post->user->avatar }}" class="w-10 h-10 rounded-full">
+                                <div>
+                                    <h3 class="font-semibold">{{ $post->user->name }}</h3>
+                                    <p class="text-gray-500 text-sm">{{ $post->created_at->diffForHumans() }}</p>
+                                </div>
+                            </div>
 
+                            <!-- Post Content -->
+                            <div class="px-4 pb-4">
+                                <p class="text-gray-800">{{ $post->content }}</p>
+                                @if($post->image)
+                                    <div class="mt-4">
+                                        <img src="{{ Storage::url($post->image) }}"
+                                             alt="Post image"
+                                             class="rounded-lg max-h-96 w-full object-cover">
+                                    </div>
+                                @endif
+                            </div>
 
-                        <div id="comments-{{ $post->id }}" class="hidden mt-4 border-t pt-4">
-                            <form action="{{ route('posts.comment', $post) }}" method="POST" class="mb-4">
-                                @csrf
-                                <div class="flex gap-2">
-                                    <textarea name="content"
-                                        class="flex-1 rounded-lg border-gray-300"
-                                        placeholder="Write a comment...">
-                                        {{ old('content') }}
-                                    </textarea>
-                                    <button type="submit"
-                                            class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                                        Post
+                            <!-- Post Actions -->
+                            <div class="px-4 py-3 border-t flex items-center justify-between">
+                                <div class="flex space-x-4">
+                                    <!-- Like Button -->
+                                    <button onclick="toggleLike({{ $post->id }})"
+                                            class="flex items-center space-x-2 text-gray-600 hover:text-blue-600 like-button {{ $post->isLikedBy(auth()->user()) ? 'text-blue-600' : '' }}"
+                                            data-post-id="{{ $post->id }}">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                                        </svg>
+                                        <span class="like-count" data-post-id="{{ $post->id }}">
+                                            {{ $post->likes()->count() }}
+                                        </span>
+                                    </button>
+
+                                    <!-- Comment Button -->
+                                    <button onclick="toggleComments({{ $post->id }})"
+                                            class="flex items-center space-x-2 text-gray-600 hover:text-blue-600">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                        </svg>
+                                        <span>{{ $post->comments()->count() }}</span>
                                     </button>
                                 </div>
-                            </form>
+                            </div>
 
-                            <div class="space-y-4">
-                                @foreach($post->comments as $comment)
-                                    <div class="flex gap-3">
-                                        <img src="{{ $comment->user->avatar }}" class="w-8 h-8 rounded-full">
-                                        <div class="flex-1">
-                                            <p class="font-semibold">{{ $comment->user->name }}</p>
-                                            <p class="text-gray-600">{{ $comment->content }}</p>
-                                            <p class="text-sm text-gray-500">{{ $comment->created_at->diffForHumans() }}</p>
+                            <!-- Comments Section -->
+                            <div id="comments-{{ $post->id }}" class="hidden border-t">
+                                <!-- Comments List -->
+                                <div class="comments-list" data-post-id="{{ $post->id }}">
+                                    @foreach($post->comments as $comment)
+                                        <div class="flex space-x-3 p-4 border-t">
+                                            <img src="{{ $comment->user->avatar }}" class="w-8 h-8 rounded-full">
+                                            <div>
+                                                <p class="font-semibold">{{ $comment->user->name }}</p>
+                                                <p class="text-gray-600">{{ $comment->content }}</p>
+                                                <p class="text-gray-400 text-sm">{{ $comment->created_at->diffForHumans() }}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                @endforeach
+                                    @endforeach
+                                </div>
+
+                                <!-- Comment Form -->
+                                <form class="p-4 border-t comment-form" data-post-id="{{ $post->id }}">
+                                    @csrf
+                                    <textarea name="content"
+                                              class="w-full rounded-lg border-gray-300 resize-none focus:border-blue-500 focus:ring focus:ring-blue-200"
+                                              rows="2"
+                                              placeholder="Write a comment..."></textarea>
+                                    <button type="submit"
+                                            class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                        Comment
+                                    </button>
+                                </form>
                             </div>
                         </div>
-
-                    </div>
+                    @endforeach
                 </div>
-            @endforeach
-        </div>
-    </div>
-
-    <!-- Create Post Modal -->
-    <div id="postModal" class="hidden fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
-        <div class="bg-white rounded-lg max-w-xl w-full mx-4">
-            <div class="p-4 border-b">
-                <h2 class="text-xl font-semibold">Create Post</h2>
             </div>
-            <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="p-4">
-                    <!-- Post Type Selection -->
-                    <div class="mb-4">
-                        <select name="type" class="w-full rounded-lg" onchange="togglePostType(this.value)">
-                            <option value="normal">Normal Post</option>
-                            <option value="snippet">Code Snippet</option>
-                        </select>
-                    </div>
-
-                    <!-- Content -->
-                    <textarea name="content" rows="4" class="w-full rounded-lg mb-4"
-                              placeholder="What's on your mind?"></textarea>
-
-                    <!-- Code Editor (hidden by default) -->
-                    <div id="codeEditor" class="hidden">
-                        <textarea name="code" rows="8" class="w-full rounded-lg mb-4 font-mono"
-                                  placeholder="Paste your code here"></textarea>
-                        <select name="language" class="w-full rounded-lg mb-4">
-                            <option value="php">PHP</option>
-                            <option value="javascript">JavaScript</option>
-                            <option value="python">Python</option>
-                        </select>
-                    </div>
-
-                    <!-- Image Upload -->
-                    <div id="imageUpload">
-                        <input type="file" name="image" accept="image/*" class="w-full">
-                    </div>
-                </div>
-                <div class="p-4 border-t">
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg">
-                        Post
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
+
+    @include('partials.post-modal')
+
+    <script>
+        function toggleComments(postId) {
+            const commentsSection = document.getElementById(`comments-${postId}`);
+            commentsSection.classList.toggle('hidden');
+        }
+
+        function toggleLike(postId) {
+            fetch(`/posts/${postId}/like`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const likeButton = document.querySelector(`.like-button[data-post-id="${postId}"]`);
+                    const likeCount = document.querySelector(`.like-count[data-post-id="${postId}"]`);
+
+                    if (data.liked) {
+                        likeButton.classList.add('text-blue-600');
+                    } else {
+                        likeButton.classList.remove('text-blue-600');
+                    }
+                    likeCount.textContent = data.count;
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const commentForms = document.querySelectorAll('.comment-form');
+            commentForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const postId = this.dataset.postId;
+                    const content = this.querySelector('textarea').value;
+
+                    fetch(`/posts/${postId}/comment`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({ content })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            const commentsList = document.querySelector(`.comments-list[data-post-id="${postId}"]`);
+                            const commentHTML = `
+                            <div class="flex space-x-3 p-4 border-t">
+                                <img src="${data.user.avatar}" class="w-8 h-8 rounded-full">
+                                <div>
+                                    <p class="font-semibold">${data.user.name}</p>
+                                    <p class="text-gray-600">${data.content}</p>
+                                    <p class="text-gray-400 text-sm">Just now</p>
+                                </div>
+                            </div>
+                        `;
+                            commentsList.insertAdjacentHTML('beforeend', commentHTML);
+                            this.querySelector('textarea').value = '';
+                        });
+                });
+            });
+        });
+    </script>
 </x-app-layout>

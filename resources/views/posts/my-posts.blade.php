@@ -10,7 +10,14 @@
 
         <div class="space-y-6">
             @forelse($posts as $post)
-                <!-- Use the same post card structure as in home.blade.php -->
+                <div class="bg-white rounded-lg shadow">
+                    <!-- ... existing post content ... -->
+
+                    <!-- Comments Section -->
+                    <div id="comments-{{ $post->id }}" class="hidden mt-4 border-t pt-4">
+                        <!-- Same comment form and list structure as in home.blade.php -->
+                    </div>
+                </div>
             @empty
                 <p class="text-center text-gray-500">You haven't created any posts yet.</p>
             @endforelse

@@ -8,26 +8,22 @@ use Illuminate\Http\RedirectResponse;
 
 class LikeController extends Controller
 {
-    public function toggle(Post $post): RedirectResponse
+    public function toggle(Post $post)
     {
-        $userId = auth()->id();
+        $user = auth()->user();
 
-        $like = Like::where('liker_id', $userId)
-            ->where('post_id', $post->id)
-            ->first();
-
-        if ($like) {
-            $like->delete();
-            $message = 'Post unliked successfully';
+        if ($post->isLikedBy($user)) {
+            $post->likes()->where('user_id', $user->id)->delete();
+            $liked = false;
         } else {
-            Like::create([
-                'liker_id' => $userId,
-                'post_id' => $post->id,
-                'like' => true
-            ]);
-            $message = 'Post liked successfully';
+            $post->likes()->create(['user_id' => $user->id]);
+            $liked = true;
         }
 
-        return back()->with('success', $message);
+        return response()->json([
+            'liked' => $liked,
+            'count' => $post->likes()->count()
+        ]);
     }
+
 }

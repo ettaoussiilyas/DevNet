@@ -30,23 +30,27 @@ class PostController extends Controller
     {
         $validated = $request->validate([
             'content' => 'required|string|max:1000',
-            'type' => 'required|in:post,snippet',
-            'images_url' => 'nullable|image|max:5120', // 5MB max
-            'video_url' => 'nullable|url'
+            'type' => 'required|in:text,code,image',
+            'code' => 'nullable|required_if:type,code|string',
+            'image' => 'nullable|required_if:type,image|image|max:5120', // 5MB max
         ]);
 
-        $post = new Post($validated);
+        $post = new Post();
         $post->user_id = auth()->id();
+        $post->content = $validated['content'];
+        $post->type = $validated['type'];
 
-        if ($request->hasFile('images_url')) {
-            $post->images_url = $request->file('images_url')->store('posts/images', 'public');
+        if ($validated['type'] === 'code') {
+            $post->code = $validated['code'];
+        } elseif ($validated['type'] === 'image' && $request->hasFile('image')) {
+            $path = $request->file('image')->store('posts', 'public');
+            $post->image = Storage::url($path);
         }
 
         $post->save();
 
         return redirect()->back()->with('success', 'Post created successfully!');
     }
-
     public function destroy(Post $post)
     {
         if ($post->user_id !== auth()->id()) {

@@ -30,8 +30,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Post interactions
     Route::post('/posts/{post}/like', [LikeController::class, 'toggle']) ->name('posts.like');
-    Route::post('/posts/{post}/comment', [PostController::class, 'comment'])->name('posts.comment');
-
+    Route::post('/posts/{post}/comment', [CommentController::class, 'store'])->name('posts.comment');
 
 });
 

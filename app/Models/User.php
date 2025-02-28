@@ -84,4 +84,17 @@ class User extends Authenticatable
         return $this->hasMany(Project::class, 'user_id');
     }
 
+    public function likes(): HasMany
+    {
+        return $this->hasMany(Like::class, 'liker_id');
+    }
+
+    /**
+     * Get the user's connections
+     */
+
+
+
+
+
 }
