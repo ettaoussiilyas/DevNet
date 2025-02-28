@@ -1,21 +1,98 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Post;
+use App\Models\HashTag;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\JsonResponse;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(): View
     {
-        $posts = Post::with(['user', 'comments', 'likes'])
+        $posts = Post::with(['user', 'tags', 'likes', 'comments.user'])
             ->withCount(['comments', 'likes'])
             ->latest()
             ->paginate(10);
 
-        return view('home', compact('posts'));
+        $trendingTags = HashTag::select('hash_tags.*')
+            ->join('post_tags', 'hash_tags.id', '=', 'post_tags.tag_id')
+            ->join('posts', 'posts.id', '=', 'post_tags.post_id')
+            ->where('posts.created_at', '>=', now()->subDays(7))
+            ->groupBy('hash_tags.id', 'hash_tags.name', 'hash_tags.created_at', 'hash_tags.updated_at')
+            ->orderByRaw('COUNT(*) DESC')
+            ->limit(10)
+            ->get();
+
+        return view('home', compact('posts', 'trendingTags'));
     }
 
-    public function userPosts()
+    public function store(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'content' => 'required|string|max:5000',
+            'image' => 'nullable|image|max:5120', // 5MB max
+            'tags' => 'nullable|string',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $post = new Post([
+                'content' => $validated['content'],
+                'user_id' => auth()->id(),
+            ]);
+
+            if ($request->hasFile('image')) {
+                $path = $request->file('image')->store('posts', 'public');
+                $post->images_url = Storage::url($path);
+            }
+
+            $post->save();
+
+            // Handle tags
+            if (!empty($validated['tags'])) {
+                $tagNames = collect(explode(',', $validated['tags']))
+                    ->map(fn($tag) => trim($tag))
+                    ->filter();
+
+                $tags = $tagNames->map(function ($tagName) {
+                    return HashTag::firstOrCreate(['name' => $tagName]);
+                });
+
+                $post->tags()->attach($tags->pluck('id'));
+            }
+
+            DB::commit();
+            return response()->json(['message' => 'Post created successfully', 'post' => $post]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Failed to create post'], 500);
+        }
+    }
+
+    public function like(Post $post): JsonResponse
+    {
+        $user = auth()->user();
+
+        if ($post->likes()->where('user_id', $user->id)->exists()) {
+            $post->likes()->where('user_id', $user->id)->delete();
+            $liked = false;
+        } else {
+            $post->likes()->create(['user_id' => $user->id]);
+            $liked = true;
+        }
+
+        return response()->json([
+            'liked' => $liked,
+            'likesCount' => $post->likes()->count(),
+        ]);
+    }
+
+    public function userPosts(): View
     {
         $posts = Post::with(['user', 'comments', 'likes'])
             ->withCount(['comments', 'likes'])
@@ -23,69 +100,6 @@ class PostController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view('posts.my-posts', compact('posts'));
-    }
-
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'content' => 'required|string|max:1000',
-            'type' => 'required|in:text,code,image',
-            'code' => 'nullable|required_if:type,code|string',
-            'image' => 'nullable|required_if:type,image|image|max:5120', // 5MB max
-        ]);
-
-        $post = new Post();
-        $post->user_id = auth()->id();
-        $post->content = $validated['content'];
-        $post->type = $validated['type'];
-
-        if ($validated['type'] === 'code') {
-            $post->code = $validated['code'];
-        } elseif ($validated['type'] === 'image' && $request->hasFile('image')) {
-            $path = $request->file('image')->store('posts', 'public');
-            $post->image = Storage::url($path);
-        }
-
-        $post->save();
-
-        return redirect()->back()->with('success', 'Post created successfully!');
-    }
-    public function destroy(Post $post)
-    {
-        if ($post->user_id !== auth()->id()) {
-            abort(403);
-        }
-
-        $post->delete();
-        return redirect()->back()->with('success', 'Post deleted successfully!');
-    }
-
-    public function like(Post $post)
-    {
-        $user = auth()->user();
-
-        $existingLike = $post->likes()->where('user_id', $user->id)->first();
-
-        if($existingLike) {
-            $existingLike->delete();
-            return back()->with('success', 'You unliked this post!');
-        }
-
-        return back()->with('success', 'You liked this post!');
-    }
-
-    public function comment(Post $post, Request $request)
-    {
-        $validated = $request->validate([
-            'content' => 'required|string|max:500'
-        ]);
-
-        $post->comments()->create([
-            'user_id' => auth()->id(),
-            'content' => $validated['content']
-        ]);
-
-        return back();
+        return view('user.posts', compact('posts'));
     }
 }

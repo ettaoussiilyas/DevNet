@@ -2,14 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Like extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'liker_id',
         'post_id',
@@ -20,13 +17,13 @@ class Like extends Model
         'like' => 'boolean'
     ];
 
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'liker_id');
-    }
-
-    public function post(): BelongsTo
+    public function post():belongsTo
     {
         return $this->belongsTo(Post::class);
+    }
+
+    public function user(): belongsTo
+    {
+        return $this->belongsTo(User::class, 'liker_id');
     }
 }

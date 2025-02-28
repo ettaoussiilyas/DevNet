@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class HashTag extends Model
+class Tag extends Model
 {
-    protected $fillable = ['name'];
+    protected $table = 'hash_tags';
 
     public function posts(): belongsToMany
     {

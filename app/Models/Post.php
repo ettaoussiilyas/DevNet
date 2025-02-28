@@ -2,29 +2,34 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Post extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'user_id',
         'content',
+        'type',
         'images_url',
-        'video_url',
-        'type'
+        'video_url'
     ];
 
-    protected $withCount = ['likes', 'comments'];
-
-    public function user(): BelongsTo
+    public function user(): belongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function likes(): hasMany
+    {
+        return $this->hasMany(Like::class);
+    }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(HashTag::class, 'post_tags', 'post_id', 'tag_id');
     }
 
     public function comments(): HasMany
@@ -32,19 +37,15 @@ class Post extends Model
         return $this->hasMany(Comment::class);
     }
 
-    public function likes(): HasMany
+    public function isLikedByUser(?User $user): bool
     {
-        return $this->hasMany(Like::class);
-    }
+        if (!$user) {
+            return false;
+        }
 
-
-    public function isLikedBy(User $user): bool
-    {
-        return $this->likes()->where('liker_id', $user->id)->exists();
-    }
-
-    public function hashtags(): BelongsToMany
-    {
-        return $this->belongsToMany(HashTag::class, 'post_hashtag');
+        return $this->likes()
+            ->where('liker_id', $user->id)
+            ->where('like', true)
+            ->exists();
     }
 }
