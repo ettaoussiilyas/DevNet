@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Likes;
+use App\Models\Like;
 use App\Http\Requests\StoreLikesRequest;
 use App\Http\Requests\UpdateLikesRequest;
 
@@ -35,7 +35,7 @@ class LikesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Likes $likes)
+    public function show(Like $likes)
     {
         //
     }
@@ -43,7 +43,7 @@ class LikesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Likes $likes)
+    public function edit(Like $likes)
     {
         //
     }
@@ -51,7 +51,7 @@ class LikesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateLikesRequest $request, Likes $likes)
+    public function update(UpdateLikesRequest $request, Like $likes)
     {
         //
     }
@@ -59,7 +59,7 @@ class LikesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Likes $likes)
+    public function destroy(Like $likes)
     {
         //
     }

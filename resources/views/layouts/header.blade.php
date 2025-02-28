@@ -37,6 +37,8 @@
                         <input type="text"
                                class="w-60 pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                     </div>
+
+                    {{--  --}}
                 @else
                     <div class="flex items-center gap-4">
                         <a href="{{ route('login') }}" class="text-gray-600 hover:text-indigo-600 transition-colors">

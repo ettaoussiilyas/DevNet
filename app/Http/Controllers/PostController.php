@@ -1,66 +1,88 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Post;
-use App\Http\Requests\StorePostRequest;
-use App\Http\Requests\UpdatePostRequest;
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $posts = Post::with(['user', 'comments', 'likes'])
+            ->withCount(['comments', 'likes'])
+            ->latest()
+            ->paginate(10);
+
+        return view('home', compact('posts'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function userPosts()
     {
-        //
+        $posts = Post::with(['user', 'comments', 'likes'])
+            ->withCount(['comments', 'likes'])
+            ->where('user_id', auth()->id())
+            ->latest()
+            ->paginate(10);
+
+        return view('posts.my-posts', compact('posts'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StorePostRequest $request)
+    public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'content' => 'required|string|max:1000',
+            'type' => 'required|in:post,snippet',
+            'images_url' => 'nullable|image|max:5120', // 5MB max
+            'video_url' => 'nullable|url'
+        ]);
+
+        $post = new Post($validated);
+        $post->user_id = auth()->id();
+
+        if ($request->hasFile('images_url')) {
+            $post->images_url = $request->file('images_url')->store('posts/images', 'public');
+        }
+
+        $post->save();
+
+        return redirect()->back()->with('success', 'Post created successfully!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Post $post)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Post $post)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatePostRequest $request, Post $post)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Post $post)
     {
-        //
+        if ($post->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $post->delete();
+        return redirect()->back()->with('success', 'Post deleted successfully!');
+    }
+
+    public function like(Post $post)
+    {
+        $like = $post->likes()->where('user_id', auth()->id())->first();
+
+        if ($like) {
+            $like->delete();
+        } else {
+            $post->likes()->create([
+                'user_id' => auth()->id()
+            ]);
+        }
+
+        return back();
+    }
+
+    public function comment(Post $post, Request $request)
+    {
+        $validated = $request->validate([
+            'content' => 'required|string|max:500'
+        ]);
+
+        $post->comments()->create([
+            'user_id' => auth()->id(),
+            'content' => $validated['content']
+        ]);
+
+        return back();
     }
 }
