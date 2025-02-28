@@ -43,11 +43,11 @@
 
                         <!-- Post Actions -->
                         <div class="flex items-center space-x-4 mt-4 pt-4 border-t">
-                            <form action="{{ route('posts.like', $post) }}" method="POST" class="inline">
+                            <form action="{{ route('posts.like', $post) }}" method="POST" class="inline like-form">
                                 @csrf
                                 <button type="submit"
-                                        class="text-gray-500 hover:text-blue-500 {{ $post->likes->contains('user_id', auth()->id()) ? 'text-blue-500' : '' }}">
-                                    Like ({{ $post->likes_count }})
+                                        class="text-gray-500 hover:text-blue-500 {{ $post->likes()->where('liker_id', auth()->id())->exists() ? 'text-blue-500' : '' }}">
+                                    Like ({{ $post->likes()->count() }})
                                 </button>
                             </form>
                             <button onclick="toggleComments('{{ $post->id }}')" class="text-gray-500 hover:text-blue-500">

@@ -11,6 +11,14 @@
                 @auth
                     {{-- Main Navigation Links --}}
                     <div class="flex items-center gap-6">
+                        <a href="{{ url('/home') }}"
+                           class="text-gray-600 hover:text-indigo-600 transition-colors {{ request()->is('/') ? 'text-indigo-600 font-medium' : '' }}">
+                            Home
+                        </a>
+                        <a href="{{ url('/my-posts') }}"
+                           class="text-gray-600 hover:text-indigo-600 transition-colors {{ request()->is('/') ? 'text-indigo-600 font-medium' : '' }}">
+                            My Posts
+                        </a>
                         <a href="{{ url('/') }}"
                            class="text-gray-600 hover:text-indigo-600 transition-colors {{ request()->is('/') ? 'text-indigo-600 font-medium' : '' }}">
                             Feed

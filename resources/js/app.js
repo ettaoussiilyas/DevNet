@@ -6,8 +6,6 @@ window.Alpine = Alpine;
 
 Alpine.start();
 
-// Add this to your resources/js/app.js or create a new file
-
 function openPostModal() {
     document.getElementById('postModal').classList.remove('hidden');
 }

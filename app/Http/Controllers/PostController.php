@@ -59,17 +59,16 @@ class PostController extends Controller
 
     public function like(Post $post)
     {
-        $like = $post->likes()->where('user_id', auth()->id())->first();
+        $user = auth()->user();
 
-        if ($like) {
-            $like->delete();
-        } else {
-            $post->likes()->create([
-                'user_id' => auth()->id()
-            ]);
+        $existingLike = $post->likes()->where('user_id', $user->id)->first();
+
+        if($existingLike) {
+            $existingLike->delete();
+            return back()->with('success', 'You unliked this post!');
         }
 
-        return back();
+        return back()->with('success', 'You liked this post!');
     }
 
     public function comment(Post $post, Request $request)

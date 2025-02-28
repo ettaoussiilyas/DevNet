@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
             NotificationSeeder::class,
             MessageSeeder::class,
             ProjectSeeder::class,
-            LikesSeeder::class,
+            LikeSeeder::class,
         ]);
     }
 }

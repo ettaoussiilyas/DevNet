@@ -7,7 +7,7 @@ use App\Models\Post;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
-class LikesSeeder extends Seeder
+class LikeSeeder extends Seeder
 {
     public function run(): void
     {
