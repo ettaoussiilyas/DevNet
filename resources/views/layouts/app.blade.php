@@ -10,9 +10,11 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
 
+{{--    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>--}}
+
     <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+@vite(['resources/css/app.css', 'resources/js/app.js'])
+
 <body class="h-full font-sans antialiased">
 <!-- Rest of your body content -->
 @stack('scripts')
@@ -45,7 +47,9 @@
     </footer>
 </div>
 
+@vite(['resources/css/app.css', 'resources/js/app.js'])
 @stack('scripts')
+
 
 </body>
 </html>

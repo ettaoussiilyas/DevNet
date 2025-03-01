@@ -48,4 +48,16 @@ class Post extends Model
             ->where('like', true)
             ->exists();
     }
+
+    public function isLikedBy(?User $user): bool
+    {
+        if (!$user) {
+            return false;
+        }
+
+        return $this->likes()
+            ->where('liker_id', $user->id)
+            ->exists();
+    }
+
 }
