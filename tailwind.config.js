@@ -14,6 +14,12 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                sage: '#BAD8B6',
+                cream: '#E1EACD',
+                ivory: '#F9F6E6',
+                purple: '#8D77AB'
+            },
         },
     },
 
