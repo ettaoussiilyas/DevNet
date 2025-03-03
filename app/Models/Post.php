@@ -3,49 +3,42 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Like;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Post extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'user_id',
-        'content',
+        'title',
+        'description',
         'type',
-        'images_url',
-        'video_url'
+        'content',
+        'line',
+        'code',
+        'image',
+        'hashtags',
     ];
 
-    public function user(): belongsTo
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function likes(): hasMany
+    public function likes()
     {
         return $this->hasMany(Like::class);
     }
 
-    public function tags(): BelongsToMany
+    public function isLikedBy(User $user)
     {
-        return $this->belongsToMany(HashTag::class, 'post_tags', 'post_id', 'tag_id');
+        return $this->likes()->where('user_id', $user->id)->exists();
     }
 
-    public function comments(): HasMany
+    public function comments()
     {
         return $this->hasMany(Comment::class);
-    }
-
-    public function isLikedByUser(?User $user): bool
-    {
-        if (!$user) {
-            return false;
-        }
-
-        return $this->likes()
-            ->where('liker_id', $user->id)
-            ->where('like', true)
-            ->exists();
     }
 }

@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
 use App\Models\Comment;
+use App\Models\Post;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 
 class CommentController extends Controller
 {
-    public function store(Post $post, Request $request)
+    public function store(Request $request, Post $post)
     {
         $validated = $request->validate([
-            'content' => 'required|string|max:1000',
+            'content' => 'required|max:1000',
         ]);
 
         $comment = $post->comments()->create([
@@ -20,13 +19,19 @@ class CommentController extends Controller
             'user_id' => auth()->id(),
         ]);
 
-        $comment->load('user');
-
         return response()->json([
-            'success' => true,
-            'comment' => $comment,
-            'count' => $post->comments()->count()
+            'comment' => $comment->load('user'),
+            'comments_count' => $post->comments()->count()
         ]);
     }
 
+    public function destroy(Comment $comment)
+    {
+        if (auth()->id() !== $comment->user_id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $comment->delete();
+        return response()->json(['success' => true]);
+    }
 }

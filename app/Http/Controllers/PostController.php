@@ -3,103 +3,131 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
-use App\Models\HashTag;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Http\JsonResponse;
+use App\Services\PostService;
 
 class PostController extends Controller
 {
+    private $postService;
+
+    public function __construct(PostService $postService)
+    {
+        $this->postService = $postService;
+    }
+
     public function index(): View
     {
-        $posts = Post::with(['user', 'tags', 'likes', 'comments.user'])
-            ->withCount(['comments', 'likes'])
-            ->latest()
-            ->paginate(10);
-
-        $trendingTags = HashTag::select('hash_tags.*')
-            ->join('post_tags', 'hash_tags.id', '=', 'post_tags.tag_id')
-            ->join('posts', 'posts.id', '=', 'post_tags.post_id')
-            ->where('posts.created_at', '>=', now()->subDays(7))
-            ->groupBy('hash_tags.id', 'hash_tags.name', 'hash_tags.created_at', 'hash_tags.updated_at')
-            ->orderByRaw('COUNT(*) DESC')
-            ->limit(10)
-            ->get();
-
-        return view('home', compact('posts', 'trendingTags'));
+        $user = Auth::user();
+        $posts = Post::orderBy('created_at', 'desc')->paginate(10);
+        return view('dashboard', compact('posts', 'user'));
     }
 
-    public function store(Request $request): JsonResponse
+    public function createLine(): View
     {
-        $validated = $request->validate([
-            'content' => 'required|string|max:5000',
-            'image' => 'nullable|image|max:5120', // 5MB max
-            'tags' => 'nullable|string',
-        ]);
+        return view('posts.create_line');
+    }
 
-        DB::beginTransaction();
-        try {
-            $post = new Post([
-                'content' => $validated['content'],
-                'user_id' => auth()->id(),
-            ]);
+    public function createCode(): View
+    {
+        return view('posts.create_code');
+    }
 
-            if ($request->hasFile('image')) {
-                $path = $request->file('image')->store('posts', 'public');
-                $post->images_url = Storage::url($path);
-            }
+    public function createImage(): View
+    {
+        return view('posts.create_image');
+    }
 
-            $post->save();
+    public function storeLine(Request $request)
+    {
+        $this->postService->createLinePost($request);
 
-            // Handle tags
-            if (!empty($validated['tags'])) {
-                $tagNames = collect(explode(',', $validated['tags']))
-                    ->map(fn($tag) => trim($tag))
-                    ->filter();
+        return redirect()->route('dashboard');
+    }
 
-                $tags = $tagNames->map(function ($tagName) {
-                    return HashTag::firstOrCreate(['name' => $tagName]);
-                });
+    public function storeCode(Request $request)
+    {
+        $this->postService->createCodePost($request);
 
-                $post->tags()->attach($tags->pluck('id'));
-            }
+        return redirect()->route('dashboard');
+    }
 
-            DB::commit();
-            return response()->json(['message' => 'Post created successfully', 'post' => $post]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['message' => 'Failed to create post'], 500);
+    public function storeImage(Request $request)
+    {
+        $this->postService->createImagePost($request);
+
+        return redirect()->route('dashboard');
+    }
+
+    public function show(string $id)
+    {
+        //
+    }
+
+    public function edit(string $id)
+    {
+        $post = Post::findOrFail($id);
+
+        if (Auth::user()->id !== $post->user_id) {
+            abort(403, 'Unauthorized action.');
         }
+
+        return view('posts.edit', compact('post'));
     }
 
-    public function like(Post $post): JsonResponse
+    public function update(Request $request, string $id)
     {
-        $user = auth()->user();
+        $post = Post::findOrFail($id);
+
+        if (Auth::user()->id !== $post->user_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $this->postService->updatePost($request, $post);
+
+        return redirect()->route('posts.myPosts')->with('success', 'Post updated successfully.');
+    }
+
+    public function destroy(string $id)
+    {
+        $post = Post::findOrFail($id);
+
+        if (Auth::user()->id !== $post->user_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $post->delete();
+
+        return redirect()->route('posts.myPosts')->with('success', 'Post deleted successfully.');
+    }
+
+    public function myPosts(): View
+    {
+        $user = Auth::user();
+        $posts = Post::where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(10);
+        $postCount = $posts->total(); // Count the posts
+        return view('posts.my_posts', compact('posts', 'user', 'postCount')); // Pass $user and $postCount to the view
+    }
+
+    public function like(Post $post)
+    {
+        $user = Auth::user();
+        $liked = false;
 
         if ($post->likes()->where('user_id', $user->id)->exists()) {
             $post->likes()->where('user_id', $user->id)->delete();
-            $liked = false;
         } else {
-            $post->likes()->create(['user_id' => $user->id]);
+            $post->likes()->create([
+                'user_id' => $user->id
+            ]);
             $liked = true;
         }
 
         return response()->json([
-            'liked' => $liked,
-            'likesCount' => $post->likes()->count(),
+            'likes_count' => $post->likes()->count(),
+            'liked' => $liked
         ]);
-    }
-
-    public function userPosts(): View
-    {
-        $posts = Post::with(['user', 'comments', 'likes'])
-            ->withCount(['comments', 'likes'])
-            ->where('user_id', auth()->id())
-            ->latest()
-            ->paginate(10);
-
-        return view('user.posts', compact('posts'));
     }
 }

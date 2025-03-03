@@ -3,27 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Like extends Model
 {
-    protected $fillable = [
-        'liker_id',
-        'post_id',
-        'like'
-    ];
+    use HasFactory;
 
-    protected $casts = [
-        'like' => 'boolean'
-    ];
+    protected $fillable = ['user_id', 'post_id'];
 
-    public function post():belongsTo
+    public function user()
     {
-        return $this->belongsTo(Post::class);
+        return $this->belongsTo(User::class);
     }
 
-    public function user(): belongsTo
+    public function post()
     {
-        return $this->belongsTo(User::class, 'liker_id');
+        return $this->belongsTo(Post::class);
     }
 }

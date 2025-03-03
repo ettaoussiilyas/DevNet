@@ -2,28 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Like;
 use App\Models\Post;
-use Illuminate\Http\RedirectResponse;
+use App\Models\Like;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LikeController extends Controller
 {
-    public function toggle(Post $post)
+    public function like(Request $request, Post $post)
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
-        if ($post->isLikedBy($user)) {
+        if ($post->likes()->where('user_id', $user->id)->exists()) {
             $post->likes()->where('user_id', $user->id)->delete();
-            $liked = false;
         } else {
-            $post->likes()->create(['user_id' => $user->id]);
-            $liked = true;
+            $post->likes()->create([
+                'user_id' => $user->id,
+            ]);
         }
 
-        return response()->json([
-            'liked' => $liked,
-            'count' => $post->likes()->count()
-        ]);
+        return back();
     }
-
 }

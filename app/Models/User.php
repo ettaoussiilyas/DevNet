@@ -2,99 +2,163 @@
 
 namespace App\Models;
 
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    use HasFactory, Notifiable;
 
-    use HasFactory;
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
-        'id',
         'name',
         'email',
         'password',
-        'biography',
-        'avatar',
         'skills',
-        'gitProfile',
+        'programming_languages',
+        'projects',
+        'certifications',
+        'github_url',
+        'image',
+        'industry',
+        'banner',
+        'bio',
+
     ];
 
-    protected $hidden = ['password'];
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
-    // Posts created by user
-    public function posts(): HasMany
+    public function hasSentConnectionRequestTo(User $user)
     {
-        return $this->hasMany(Post::class);
+        return $this->connections()
+            ->where('connected_user_id', $user->id)
+            ->where('status', 'pending')
+            ->exists();
     }
 
-    // UserController's connections
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts()
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'skills' => 'string',
+            'programming_languages' => 'string',
+            'projects' => 'string',
+            'certifications' => 'string',
+            'github_url' => 'string',
+            'image' => 'string',
+            'industry' => 'string',
+            'banner' => 'string',
+            'bio' => 'string',
+        ];
+    }
+
     public function connections()
     {
-        return $this->belongsToMany(User::class, 'connections', 'sender_id', 'receiver_id')
-            ->wherePivot('status', 'accepted');
-    }
-
-
-    // Messages sent by user
-    public function sentMessages(): HasMany
-    {
-        return $this->hasMany(Message::class, 'sender_id');
-    }
-
-    // Messages received by user
-    public function receivedMessages(): HasMany
-    {
-        return $this->hasMany(Message::class, 'receiver_id');
-    }
-
-    // UserController's notifications
-    public function notifications(): HasMany
-    {
-        return $this->hasMany(Notification::class);
-    }
-
-    // Get skills as array
-//    public function getSkillsArrayAttribute(): array
-//    {
-//        return $this->skills ? explode(',', $this->skills) : [];
-//    }
-    public function getSkillsArrayAttribute(): array
-    {
-        return $this->skills ? array_map('trim', explode(',', $this->skills)) : [];
-    }
-
-
-    public function pendingConnections()
-    {
-        return $this->belongsToMany(User::class, 'connections', 'sender_id', 'receiver_id')
-            ->wherePivot('status', 'pending');
+        return $this->hasMany(Connection::class, 'user_id');
     }
 
     public function receivedConnections()
     {
-        return $this->belongsToMany(User::class, 'connections', 'receiver_id', 'sender_id')
-            ->wherePivot('status', 'pending');
+        return $this->hasMany(Connection::class, 'connected_user_id');
     }
 
-    public function projects(): hasMany
+    public function pendingConnections()
     {
-        return $this->hasMany(Project::class, 'user_id');
+        return $this->hasMany(Connection::class, 'connected_user_id')
+                    ->where('status', 'pending');
     }
 
-    public function likes(): HasMany
+    public function acceptedConnections()
     {
-        return $this->hasMany(Like::class, 'liker_id');
+        return $this->hasMany(Connection::class)
+                    ->where('status', 'accepted');
     }
 
-    /**
-     * Get the user's connections
-     */
+    public function getConnectionCount()
+    {
+        return $this->acceptedConnections()->count();
+    }
 
+    public function isConnectedWith(User $user)
+    {
+        return Connection::where('status', Connection::STATUS_ACCEPTED)
+            ->where(function($query) use ($user) {
+                $query->where(function($q) use ($user) {
+                    $q->where('user_id', $this->id)
+                      ->where('connected_user_id', $user->id);
+                })->orWhere(function($q) use ($user) {
+                    $q->where('user_id', $user->id)
+                      ->where('connected_user_id', $this->id);
+                });
+            })->exists();
+    }
 
+    public function sentConnectionRequests()
+    {
+        return $this->belongsToMany(User::class, 'connections', 'user_id', 'connection_id')
+                    ->withPivot('status')
+                    ->wherePivot('status', 'pending');
+    }
 
+    public function receivedConnectionRequests()
+    {
+        return $this->belongsToMany(User::class, 'connections', 'connection_id', 'user_id')
+                    ->withPivot('status')
+                    ->wherePivot('status', 'pending');
+    }
 
+    public function getConnectionsCountAttribute()
+    {
+        return $this->connections()
+            ->where('status', 'accepted')
+            ->count();
+    }
 
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    public function isConnectedOrPendingWith(User $user)
+    {
+        return Connection::where(function($query) use ($user) {
+            $query->where(function($q) use ($user) {
+                $q->where('user_id', $this->id)
+                  ->where('connected_user_id', $user->id);
+            })->orWhere(function($q) use ($user) {
+                $q->where('user_id', $user->id)
+                  ->where('connected_user_id', $this->id);
+            });
+        })->whereIn('status', [Connection::STATUS_PENDING, Connection::STATUS_ACCEPTED])
+          ->exists();
+    }
+
+    public function getConnectionsAttribute()
+    {
+        return Connection::where(function($query) {
+            $query->where('user_id', $this->id)
+                  ->orWhere('connected_user_id', $this->id);
+        })->where('status', Connection::STATUS_ACCEPTED)
+          ->count();
+    }
 }

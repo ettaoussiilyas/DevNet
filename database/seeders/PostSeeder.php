@@ -2,21 +2,17 @@
 
 namespace Database\Seeders;
 
-use App\Models\Post;
-use App\Models\User;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Post;
 
 class PostSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        // Create 2-5 posts for each user
-        User::all()->each(function ($user) {
-            Post::factory()
-                ->count(fake()->numberBetween(2, 5))
-                ->create([
-                    'user_id' => $user->id
-                ]);
-        });
+        Post::factory(20)->create();
     }
 }
