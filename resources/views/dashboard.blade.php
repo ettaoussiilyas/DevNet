@@ -252,35 +252,48 @@
     </div>
 </x-app-layout>
 <script>
-    document.querySelectorAll('.like-form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
 
-            const button = this.querySelector('button');
-            const likesCount = button.querySelector('.likes-count');
-            const svg = button.querySelector('svg');
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.like-form').forEach(form => {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
 
-            fetch(this.action, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json',
-                },
-                body: new FormData(this)
-            })
-                .then(response => response.json())
-                .then(data => {
-                    likesCount.textContent = data.likes_count;
+                const url = this.action;
+                const token = this.querySelector('input[name="_token"]').value;
 
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': token,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    const button = this.querySelector('button');
+                    const svg = button.querySelector('svg');
+                    const count = this.querySelector('.likes-count');
+
+                    // Update like count
+                    count.textContent = data.likes_count;
+
+                    // Update visual state based on liked status
                     if (data.liked) {
+                        svg.classList.add('text-blue-500');
                         svg.setAttribute('fill', 'currentColor');
-                        svg.classList.add('text-lavender');
+                        count.classList.add('text-blue-500');
                     } else {
+                        svg.classList.remove('text-blue-500');
                         svg.setAttribute('fill', 'none');
-                        svg.classList.remove('text-lavender');
+                        count.classList.remove('text-blue-500');
                     }
-                })
-                .catch(error => console.error('Error:', error));
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
         });
     });
 
