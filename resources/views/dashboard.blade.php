@@ -36,7 +36,7 @@
                 <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-mint">
                     <div class="relative">
                         <div class="h-24 bg-gradient-to-r from-lavender to-mint relative overflow-hidden">
-                            <img src="{{ asset('storage/'.$user->banner) }}" alt="Description" class="absolute inset-0 w-full h-full object-cover opacity-90 mix-blend-overlay">
+                            <img src="{{ asset('storage/'.$user->banner) }}" alt="" class="absolute inset-0 w-full h-full object-cover opacity-90 mix-blend-overlay">
                         </div>
                         <img src="{{ asset('storage/' . $user->image) }}" alt="Profile"
                              class="absolute -bottom-6 left-4 w-20 h-20 rounded-full border-4 border-white shadow-md"/>
