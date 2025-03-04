@@ -113,5 +113,50 @@ document.addEventListener('DOMContentLoaded', function() {
                 fetchLatestNotifications();
             });
         }
+        
+        // Listen for real-time notifications if window.userId exists
+        if (window.userId) {
+            window.Echo.private(`notifications.${window.userId}`)
+                .listen('.notification.received', (data) => {
+                    // Update the notification badge count
+                    const currentCount = parseInt(notificationBadge.textContent || '0');
+                    notificationBadge.textContent = currentCount + 1;
+                    notificationBadge.style.display = 'flex';
+                    
+                    // Show a toast notification
+                    showToastNotification(data.message);
+                });
+        }
     }
 });
+
+// Function to show a toast notification
+function showToastNotification(message) {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = 'fixed top-4 right-4 bg-[#8D77AB] text-white px-4 py-2 rounded shadow-lg z-50 transform transition-transform duration-300 translate-x-full';
+    toast.innerHTML = `
+        <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+            </svg>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    // Add to DOM
+    document.body.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => {
+        toast.classList.remove('translate-x-full');
+    }, 10);
+    
+    // Remove after 5 seconds
+    setTimeout(() => {
+        toast.classList.add('translate-x-full');
+        setTimeout(() => {
+            document.body.removeChild(toast);
+        }, 300);
+    }, 5000);
+}

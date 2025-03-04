@@ -35,7 +35,17 @@ class NotificationService
         // Only create notification if the user is not liking their own post
         if ($user->id !== $sender->id) {
             $message = $sender->name . ' liked your post';
-            return $this->createNotification($user, $sender, 'like', $message, $post);
+            $notification = $this->createNotification($user, $sender, 'like', $message, $post);
+            
+            // Debug log
+            \Illuminate\Support\Facades\Log::info('Notification created:', [
+                'user_id' => $user->id,
+                'sender_id' => $sender->id,
+                'type' => 'like',
+                'message' => $message
+            ]);
+            
+            return $notification;
         }
     }
 

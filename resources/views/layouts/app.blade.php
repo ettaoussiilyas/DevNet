@@ -35,15 +35,11 @@
         </div>
 
       
+
         @auth
-        <script>
-            window.userId = "{{ auth()->id() }}";
-        </script>
+            <script>
+                window.userId = "{{ auth()->id() }}";
+            </script>
         @endauth
-        <!-- @auth
-        <script>
-            window.userId = {{ auth()->id() }};
-        </script>
-        @endauth -->
     </body>
 </html>

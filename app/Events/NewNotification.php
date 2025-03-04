@@ -55,7 +55,8 @@ class NewNotification implements ShouldBroadcast
         return [
             'id' => $this->notification->id,
             'message' => $this->notification->message,
-            'created_at' => $this->notification->created_at,
+            'type' => $this->notification->type,
+            'created_at' => $this->notification->created_at->diffForHumans()
         ];
     }
 }
