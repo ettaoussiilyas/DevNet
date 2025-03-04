@@ -32,14 +32,20 @@ class NotificationService
     
     public function createLikeNotification(User $user, User $sender, Post $post)
     {
-        $message = $sender->name . ' liked your post';
-        return $this->createNotification($user, $sender, 'like', $message, $post);
+        // Only create notification if the user is not liking their own post
+        if ($user->id !== $sender->id) {
+            $message = $sender->name . ' liked your post';
+            return $this->createNotification($user, $sender, 'like', $message, $post);
+        }
     }
-    
+
     public function createCommentNotification(User $user, User $sender, Post $post)
     {
-        $message = $sender->name . ' commented on your post';
-        return $this->createNotification($user, $sender, 'comment', $message, $post);
+        // Only create notification if the user is not commenting on their own post
+        if ($user->id !== $sender->id) {
+            $message = $sender->name . ' commented on your post';
+            return $this->createNotification($user, $sender, 'comment', $message, $post);
+        }
     }
     
     public function createConnectionNotification(User $user, User $sender)

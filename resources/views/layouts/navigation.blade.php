@@ -112,7 +112,7 @@
                                     <button onclick="markAllAsRead()" class="text-xs hover:underline">Mark all as read</button>
                                 </div>
                                 <div id="notification-list" class="max-h-64 overflow-y-auto divide-y divide-gray-100">
-                                    <div class="px-4 py-3 text-sm text-gray-500 text-center">Loading notifications...</div>
+                                    <!-- Notifications will be loaded here -->
                                 </div>
                                 <div class="border-t border-gray-100 bg-gray-50 rounded-b-md">
                                     <a href="{{ route('notifications.index') }}" class="block px-4 py-2 text-sm text-center text-[#8D77AB] hover:bg-gray-100 font-medium">

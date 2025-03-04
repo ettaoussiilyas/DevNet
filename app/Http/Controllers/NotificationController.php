@@ -5,26 +5,32 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
     public function index()
     {
-        $notifications = auth()->user()->notifications()->with('sender')->latest()->paginate(15);
+        $notifications = Notification::where('user_id', Auth::id())
+            ->with('sender')
+            ->latest()
+            ->paginate(15);
                 
         return view('notifications.index', compact('notifications'));
     }
     
     public function getUnreadCount()
     {
-        $count = auth()->user()->notifications()->where('read', false)->count();
+        $count = Notification::where('user_id', Auth::id())
+            ->where('read', false)
+            ->count();
         
         return response()->json(['count' => $count]);
     }
     
     public function getLatest()
     {
-        $notifications = auth()->user()->notifications()
+        $notifications = Notification::where('user_id', Auth::id())
             ->with('sender')
             ->latest()
             ->take(5)
@@ -49,12 +55,8 @@ class NotificationController extends Controller
     
     public function markAsRead($id)
     {
-        $notification = Notification::findOrFail($id);
-        
-        if ($notification->user_id !== auth()->id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-        
+        $notification = Notification::where('user_id', Auth::id())
+            ->findOrFail($id);
         $notification->update(['read' => true]);
         
         return response()->json(['success' => true]);
@@ -62,7 +64,8 @@ class NotificationController extends Controller
     
     public function markAllAsRead()
     {
-        auth()->user()->notifications()->update(['read' => true]);
+        Notification::where('user_id', Auth::id())
+            ->update(['read' => true]);
         
         return response()->json(['success' => true]);
     }
