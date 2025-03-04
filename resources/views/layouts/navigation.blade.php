@@ -87,10 +87,12 @@
                 @endauth
 
                 <!-- icon of notificatio -->
+                <!-- Replace the notification dropdown section with this improved version -->
+                <!-- icon of notification -->
                 <div class="ml-3 relative">
-                    <x-dropdown align="right" width="48">
+                    <x-dropdown align="right" width="80">
                         <x-slot name="trigger">
-                            <button class="flex items-center text-sm font-medium text-[#BAD8B6] hover:text-gray-700 focus:outline-none transition duration-150 ease-in-out">
+                            <button class="flex items-center text-sm font-medium text-[#F9F6E6] hover:text-[#E1EACD] focus:outline-none transition duration-150 ease-in-out">
                                 <div class="relative">
                                     <!-- Bell Icon -->
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -101,15 +103,22 @@
                                 </div>
                             </button>
                         </x-slot>
-
+                
                         <x-slot name="content">
-                            <div id="notification-list" class="py-1 max-h-64 overflow-y-auto">
-                                <div class="px-4 py-2 text-sm text-gray-500">Loading notifications...</div>
+                            <div class="bg-white rounded-md shadow-lg border border-[#E1EACD] w-80">
+                                <div class="flex items-center justify-between px-4 py-2 bg-[#8D77AB] text-[#F9F6E6] rounded-t-md">
+                                    <h3 class="font-semibold">Notifications</h3>
+                                    <button onclick="markAllAsRead()" class="text-xs hover:underline">Mark all as read</button>
+                                </div>
+                                <div id="notification-list" class="max-h-64 overflow-y-auto divide-y divide-gray-100">
+                                    <div class="px-4 py-3 text-sm text-gray-500 text-center">Loading notifications...</div>
+                                </div>
+                                <div class="border-t border-gray-100 bg-gray-50 rounded-b-md">
+                                    <a href="{{ route('notifications.index') }}" class="block px-4 py-2 text-sm text-center text-[#8D77AB] hover:bg-gray-100 font-medium">
+                                        View all notifications
+                                    </a>
+                                </div>
                             </div>
-                            <div class="border-t border-gray-100"></div>
-                            <a href="{{ route('notifications.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                View all notifications
-                            </a>
                         </x-slot>
                     </x-dropdown>
                 </div>

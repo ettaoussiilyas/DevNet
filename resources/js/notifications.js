@@ -1,20 +1,3 @@
-// Function to fetch unread notification count
-function fetchUnreadCount() {
-    fetch('/notifications/unread-count')
-        .then(response => response.json())
-        .then(data => {
-            const badge = document.getElementById('notification-badge');
-            if (badge) {
-                if (data.count > 0) {
-                    badge.textContent = data.count;
-                    badge.style.display = 'flex';
-                } else {
-                    badge.style.display = 'none';
-                }
-            }
-        });
-}
-
 // Function to fetch latest notifications
 function fetchLatestNotifications() {
     fetch('/notifications/latest')
@@ -24,18 +7,30 @@ function fetchLatestNotifications() {
             if (!notificationList) return;
             
             if (data.notifications.length === 0) {
-                notificationList.innerHTML = '<div class="px-4 py-2 text-sm text-gray-500">No new notifications</div>';
+                notificationList.innerHTML = '<div class="px-4 py-2 text-sm text-gray-500">No notifications</div>';
                 return;
             }
             
             let html = '';
             data.notifications.forEach(notification => {
-                const isRead = notification.read ? 'text-gray-500' : 'font-semibold';
+                const isRead = notification.read ? 'bg-white' : 'bg-[#E1EACD]/30';
+                const textColor = notification.read ? 'text-gray-600' : 'text-[#8D77AB] font-semibold';
+                
+                const url = notification.post_id ? `/posts/${notification.post_id}` : '#';
+                
                 html += `
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-100 ${isRead}" 
-                       onclick="markAsRead(${notification.id}); return false;">
-                        <div class="text-sm">${notification.message}</div>
-                        <div class="text-xs text-gray-500">${timeAgo(new Date(notification.created_at))}</div>
+                    <a href="${url}" class="block px-4 py-3 hover:bg-gray-50 ${isRead} border-b border-gray-100" 
+                       onclick="if(!event.target.classList.contains('mark-read-btn')) markAsRead(${notification.id})">
+                        <div class="flex items-start">
+                            <div class="flex-grow">
+                                <p class="${textColor} text-sm">${notification.message}</p>
+                                <p class="text-xs text-gray-400 mt-1">${notification.created_at}</p>
+                            </div>
+                            <button class="mark-read-btn ml-2 text-xs text-gray-400 hover:text-[#8D77AB]" 
+                                    onclick="event.preventDefault(); markAsRead(${notification.id})">
+                                ${notification.read ? '' : 'Mark as read'}
+                            </button>
+                        </div>
                     </a>
                 `;
             });
@@ -62,34 +57,55 @@ function markAsRead(id) {
     });
 }
 
-// Helper function to format time ago
-function timeAgo(date) {
-    const seconds = Math.floor((new Date() - date) / 1000);
-    
-    let interval = seconds / 31536000;
-    if (interval > 1) return Math.floor(interval) + " years ago";
-    
-    interval = seconds / 2592000;
-    if (interval > 1) return Math.floor(interval) + " months ago";
-    
-    interval = seconds / 86400;
-    if (interval > 1) return Math.floor(interval) + " days ago";
-    
-    interval = seconds / 3600;
-    if (interval > 1) return Math.floor(interval) + " hours ago";
-    
-    interval = seconds / 60;
-    if (interval > 1) return Math.floor(interval) + " minutes ago";
-    
-    return Math.floor(seconds) + " seconds ago";
+// Function to mark all notifications as read
+function markAllAsRead() {
+    fetch('/notifications/mark-all-as-read', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            fetchUnreadCount();
+            fetchLatestNotifications();
+        }
+    });
 }
+
+// Function to fetch unread notification count (remove duplicate declaration)
+const fetchUnreadCount = () => {
+    fetch('/notifications/unread-count')
+        .then(response => response.json())
+        .then(data => {
+            const badge = document.getElementById('notification-badge');
+            if (badge) {
+                if (data.count > 0) {
+                    badge.textContent = data.count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        });
+};
 
 // Make functions globally available
 window.fetchLatestNotifications = fetchLatestNotifications;
 window.markAsRead = markAsRead;
+window.markAllAsRead = markAllAsRead;
+window.fetchUnreadCount = fetchUnreadCount;
 
 // Initialize everything when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    fetchUnreadCount();
-    fetchLatestNotifications();
+    // Only fetch notifications if we're on a page that has the notification elements
+    const notificationList = document.getElementById('notification-list');
+    const notificationBadge = document.getElementById('notification-badge');
+    
+    if (notificationList && notificationBadge) {
+        fetchUnreadCount();
+        fetchLatestNotifications();
+    }
 });

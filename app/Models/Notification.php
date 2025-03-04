@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Notification extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'user_id',
         'sender_id',
-        'type',
         'post_id',
+        'type',
         'message',
         'read'
     ];
@@ -29,6 +32,4 @@ class Notification extends Model
     {
         return $this->belongsTo(Post::class);
     }
-    
-    // Remove the notifications() relationship as it's causing a circular reference
 }

@@ -162,6 +162,7 @@ class User extends Authenticatable
           ->count();
     }
 
+    // Add this method to your User model
     public function notifications()
     {
         return $this->hasMany(Notification::class);
