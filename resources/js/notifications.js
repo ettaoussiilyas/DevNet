@@ -75,7 +75,7 @@ function markAllAsRead() {
     });
 }
 
-// Function to fetch unread notification count (remove duplicate declaration)
+// Function to fetch unread notification count
 const fetchUnreadCount = () => {
     fetch('/notifications/unread-count')
         .then(response => response.json())
@@ -101,11 +101,17 @@ window.fetchUnreadCount = fetchUnreadCount;
 // Initialize everything when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Only fetch notifications if we're on a page that has the notification elements
-    const notificationList = document.getElementById('notification-list');
     const notificationBadge = document.getElementById('notification-badge');
     
-    if (notificationList && notificationBadge) {
+    if (notificationBadge) {
         fetchUnreadCount();
-        fetchLatestNotifications();
+        
+        // Add click event to notification icon to load notifications when clicked
+        const notificationTrigger = notificationBadge.closest('button');
+        if (notificationTrigger) {
+            notificationTrigger.addEventListener('click', function() {
+                fetchLatestNotifications();
+            });
+        }
     }
 });
