@@ -84,6 +84,12 @@
         </div>
 
         <div class="bg-[#E1EACD] p-4 rounded-lg">
+            <x-input-label for="image" :value="__('Profile Banner')" class="text-[#8D77AB] font-semibold" />
+            <input id="banner" name="banner" type="file" class="mt-1 block w-full text-[#8D77AB] file:bg-[#BAD8B6] file:border-0 file:rounded-md file:px-4 file:py-2 file:text-[#F9F6E6] hover:file:bg-[#BAD8B6]/90" />
+            <x-input-error class="mt-2" :messages="$errors->get('banner')" />
+        </div>
+
+        <div class="bg-[#E1EACD] p-4 rounded-lg">
             <x-input-label for="industry" :value="__('Industry')" class="text-[#8D77AB] font-semibold" />
             <x-text-input id="industry" name="industry" type="text" class="mt-1 block w-full bg-[#F9F6E6] border-[#BAD8B6] rounded-md focus:ring-[#8D77AB] focus:border-[#8D77AB]" :value="old('industry', $user->industry)" autocomplete="industry" />
             <x-input-error class="mt-2" :messages="$errors->get('industry')" />
