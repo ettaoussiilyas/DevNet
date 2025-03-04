@@ -6,13 +6,22 @@ use App\Models\User;
 use App\Models\Connection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Services\NotificationService;
+
 
 class ConnectionController extends Controller
 {
+    protected $notificationService;
+    
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
+    
     public function index()
     {
         $user = Auth::user();
-
+    
         // Get users who are not connected or pending with the current user
         $userss = User::where('id', '!=', $user->id)
             ->whereNotIn('id', function($query) use ($user) {
@@ -28,12 +37,13 @@ class ConnectionController extends Controller
                     ->whereIn('status', ['accepted', 'pending']);
             })
             ->get();
-
-        $pendingRequests = $user->receivedConnections()
-            ->with('user')
+    
+        // Fix: Use direct query instead of relationship method
+        $pendingRequests = Connection::where('connected_user_id', $user->id)
             ->where('status', 'pending')
+            ->with('user')
             ->get();
-
+    
         return view('connections.index', compact('user', 'userss', 'pendingRequests'));
     }
 
@@ -57,6 +67,9 @@ class ConnectionController extends Controller
             'connected_user_id' => $user->id,
             'status' => Connection::STATUS_PENDING
         ]);
+        
+        // Create notification for the user receiving the connection request
+        $this->notificationService->createConnectionNotification($user, Auth::user());
 
         return back()->with('success', 'Connection request sent');
     }
@@ -67,11 +80,14 @@ class ConnectionController extends Controller
             ->where('connected_user_id', Auth::id())
             ->where('status', Connection::STATUS_PENDING)
             ->first();
-
+    
         if ($connection) {
             $connection->update(['status' => Connection::STATUS_ACCEPTED]);
+            
+            // Notify the original requester that their connection was accepted
+            $this->notificationService->createConnectionAcceptedNotification($user, Auth::user());
         }
-
+    
         return back()->with('success', 'Connection accepted successfully');
     }
 

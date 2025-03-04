@@ -63,4 +63,10 @@ class NotificationService
         $message = $sender->name . ' sent you a connection request';
         return $this->createNotification($user, $sender, 'connection', $message);
     }
+    
+    public function createConnectionAcceptedNotification(User $user, User $sender)
+    {
+        $message = $sender->name . ' accepted your connection request';
+        return $this->createNotification($user, $sender, 'connection_accepted', $message);
+    }
 }

@@ -77,11 +77,6 @@ class User extends Authenticatable
         return $this->hasMany(Connection::class, 'user_id');
     }
 
-    public function receivedConnections()
-    {
-        return $this->hasMany(Connection::class, 'connected_user_id');
-    }
-
     public function pendingConnections()
     {
         return $this->hasMany(Connection::class, 'connected_user_id')
