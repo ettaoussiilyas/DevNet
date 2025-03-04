@@ -1,5 +1,8 @@
 import './bootstrap';
 
+// Add this import to your existing app.js file
+import './notifications';
+
 import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;

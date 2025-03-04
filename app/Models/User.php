@@ -161,4 +161,9 @@ class User extends Authenticatable
         })->where('status', Connection::STATUS_ACCEPTED)
           ->count();
     }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
 }

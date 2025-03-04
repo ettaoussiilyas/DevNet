@@ -3,6 +3,7 @@
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\LikeController;
 use App\Models\Post;
 use Illuminate\Support\Facades\Route;
@@ -51,6 +52,15 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/connections/send/{user}', [ConnectionController::class, 'sendRequest'])->name('connections.send');
     Route::post('/connections/accept/{user}', [ConnectionController::class, 'acceptRequest'])->name('connections.accept');
     Route::post('/connections/reject/{user}', [ConnectionController::class, 'rejectRequest'])->name('connections.reject');
+});
+
+// Notification routes
+Route::middleware('auth')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount']);
+    Route::get('/notifications/latest', [NotificationController::class, 'getLatest']);
+    Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
+    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead']);
 });
 
 require __DIR__ . '/auth.php';

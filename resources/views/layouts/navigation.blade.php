@@ -32,6 +32,7 @@
 
             <!-- Right Side -->
             <div class="flex items-center">
+
                 <!-- Search Bar -->
                 <div class="hidden md:flex items-center mr-4">
                     <div class="relative">
@@ -84,6 +85,34 @@
                         </x-dropdown>
                     </div>
                 @endauth
+
+                <!-- icon of notificatio -->
+                <div class="ml-3 relative">
+                    <x-dropdown align="right" width="48">
+                        <x-slot name="trigger">
+                            <button class="flex items-center text-sm font-medium text-[#BAD8B6] hover:text-gray-700 focus:outline-none transition duration-150 ease-in-out">
+                                <div class="relative">
+                                    <!-- Bell Icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                    </svg>
+                                    <!-- Notification Badge -->
+                                    <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full h-4 w-4 flex items-center justify-center text-xs" style="display: none;">0</span>
+                                </div>
+                            </button>
+                        </x-slot>
+
+                        <x-slot name="content">
+                            <div id="notification-list" class="py-1 max-h-64 overflow-y-auto">
+                                <div class="px-4 py-2 text-sm text-gray-500">Loading notifications...</div>
+                            </div>
+                            <div class="border-t border-gray-100"></div>
+                            <a href="{{ route('notifications.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                View all notifications
+                            </a>
+                        </x-slot>
+                    </x-dropdown>
+                </div>
 
                 <!-- Mobile menu button -->
                 <div class="flex items-center sm:hidden">
