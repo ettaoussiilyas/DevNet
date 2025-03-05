@@ -67,6 +67,7 @@ class NotificationController extends Controller
         Notification::where('user_id', Auth::id())
             ->update(['read' => true]);
         
-        return response()->json(['success' => true]);
+        // return response()->json(['success' => true]);
+        return redirect()->back();
     }
 }
