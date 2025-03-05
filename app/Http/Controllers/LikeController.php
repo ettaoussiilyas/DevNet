@@ -24,6 +24,7 @@ class LikeController extends Controller
     public function like(Post $post)
     {
         $user = Auth::user();
+
     
         if ($post->likes()->where('user_id', $user->id)->exists()) {
             $post->likes()->where('user_id', $user->id)->delete();

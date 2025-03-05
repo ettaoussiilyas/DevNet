@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use App\Services\PostService;
-
+use App\Services\NotificationService; 
 class PostController extends Controller
 {
     private $postService;
@@ -123,6 +124,17 @@ class PostController extends Controller
                 'user_id' => $user->id
             ]);
             $liked = true;
+            if($post->user_id !== $user->id){
+
+                $notificationService = app(NotificationService:: class);
+                $notificationService->createLikeNotification($post->user, $user, $post);
+                \Illuminate\Support\Facades\Log::info('Like notification triggered from PostController', [
+                    'post_id' => $post->id,
+                    'post_user_id' => $post->user_id,
+                    'liker_id' => $user->id
+
+                ]);
+            }
         }
 
         return response()->json([
