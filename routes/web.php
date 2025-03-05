@@ -4,6 +4,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\LikeController;
 use App\Models\Post;
 use Illuminate\Support\Facades\Route;
@@ -61,6 +62,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/notifications/latest', [NotificationController::class, 'getLatest']);
     Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
     Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+});
+
+
+// Messaging routes
+Route::middleware('auth')->group(function () {
+    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/users', [MessageController::class, 'getUsersWithLatestMessage']);
+    Route::get('/messages/unread-count', [MessageController::class, 'getUnreadCount']);
+    Route::get('/messages/conversation/{user}', [MessageController::class, 'getConversation'])->name('messages.conversation');
+    Route::post('/messages/send/{user}', [MessageController::class, 'sendMessage'])->name('messages.send');
 });
 
 require __DIR__ . '/auth.php';
