@@ -74,7 +74,8 @@ class User extends Authenticatable
 
     public function connections()
     {
-        return $this->hasMany(Connection::class, 'user_id');
+        return $this->hasMany(Connection::class, 'user_id')
+            ->orWhere('connected_user_id', $this->id);
     }
 
     public function pendingConnections()
@@ -165,7 +166,7 @@ class User extends Authenticatable
 
     public function sentMessages()
     {
-        return $this->hasMany(Message::class);
+        return $this->hasMany(Message::class, 'sender_id');
     }
 
 

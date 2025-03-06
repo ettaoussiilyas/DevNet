@@ -41,5 +41,6 @@
                 window.userId = "{{ auth()->id() }}";
             </script>
         @endauth
+        @stack('scripts')
     </body>
 </html>

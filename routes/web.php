@@ -69,20 +69,13 @@ Route::middleware('auth')->group(function () {
 
 // Messaging routes
 Route::middleware('auth')->group(function () {
+
     Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
     Route::get('/messages/users', [MessageController::class, 'getUsers']);
-    // Uncomment this if you want to use the alternative method
-    // Route::get('/messages/users', [MessageController::class, 'getUsersWithLatestMessage']);
+    Route::get('/messages/conversation/{user}', [MessageController::class, 'getConversation']);
+    Route::post('/messages/send/{user}', [MessageController::class, 'sendMessage']);
     Route::get('/messages/unread-count', [MessageController::class, 'getUnreadCount']);
-    Route::get('/messages/conversation/{user}', [MessageController::class, 'getConversation'])->name('messages.conversation');
-    Route::post('/messages/send/{user}', [MessageController::class, 'sendMessage'])->name('messages.send');
-    
-    // route for debugging
-    Route::get('/test-messages', function() {
-        return response()->json([
-            'users' => App\Models\User::where('id', '!=', auth()->id())->limit(5)->get()
-        ]);
-    });
+
 });
 
 

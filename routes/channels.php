@@ -2,6 +2,11 @@
 
 use Illuminate\Support\Facades\Broadcast;
 
+// Add this line to authenticate the private channel
+Broadcast::channel('messages.{id}', function ($user, $id) {
+    return (int) $user->id === (int) $id;
+});
+
 /*
 |--------------------------------------------------------------------------
 | Broadcast Channels

@@ -160,11 +160,8 @@
     <div :class="{'block': open, 'hidden': !open}" class="sm:hidden bg-[#8D77AB] border-t border-[#E1EACD]">
         <div class="px-2 pt-2 pb-3 space-y-1">
             @foreach(['Feed' => '/', 'My Posts' => 'posts.myPosts', 'Network' => 'connections.index', 'Home' => 'dashboard'] as $label => $route)
-                <x-responsive-nav-link :href="$route === '/' ? '/' : route($route)" :active="$route === '/' ? request()->is('/') : request()->routeIs($route)"
-                                       class="block px-3 py-2 rounded-md text-base font-medium
-                    {{ ($route === '/' ? request()->is('/') : request()->routeIs($route))
-                        ? 'bg-[#BAD8B6] text-[#8D77AB]'
-                        : 'text-[#F9F6E6] hover:bg-[#E1EACD] hover:text-[#8D77AB]' }}">
+                <x-responsive-nav-link :href="$route === '/' ? '/' : route($route)" 
+                                      :active="$route === '/' ? request()->is('/') : request()->routeIs($route)">
                     {{ __($label) }}
                 </x-responsive-nav-link>
             @endforeach
