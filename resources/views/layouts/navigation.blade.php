@@ -124,6 +124,20 @@
                     </x-dropdown>
                 </div>
 
+                <!-- Messages Icon -->
+                <div class="ml-3 relative">
+                    <a href="{{ route('messages.index') }}" class="flex items-center text-sm font-medium text-[#F9F6E6] hover:text-[#E1EACD] focus:outline-none transition duration-150 ease-in-out">
+                        <div class="relative">
+                            <!-- Message Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            </svg>
+                            <!-- Message Badge -->
+                            <span id="messages-badge" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs" style="display: none;">0</span>
+                        </div>
+                    </a>
+                </div>
+
                 <!-- Mobile menu button -->
                 <div class="flex items-center sm:hidden">
                     <button @click="open = !open"

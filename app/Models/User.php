@@ -168,8 +168,16 @@ class User extends Authenticatable
         return $this->hasMany(Message::class);
     }
 
+
+
     public function receivedMessages()
     {
-        return $this->hasMany(Message::class, 'recipient_id');
+        return $this->hasMany(Message::class, 'receiver_id');
+    }
+    
+    // Add the connectedTo relationship that's missing
+    public function connectedTo()
+    {
+        return $this->hasMany(Connection::class, 'connected_user_id');
     }
 }

@@ -48,6 +48,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 });
 
+// Connections routes
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/connections', [ConnectionController::class, 'index'])->name('connections.index');
     Route::post('/connections/send/{user}', [ConnectionController::class, 'sendRequest'])->name('connections.send');
@@ -68,10 +70,20 @@ Route::middleware('auth')->group(function () {
 // Messaging routes
 Route::middleware('auth')->group(function () {
     Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
-    Route::get('/messages/users', [MessageController::class, 'getUsersWithLatestMessage']);
+    Route::get('/messages/users', [MessageController::class, 'getUsers']);
+    // Uncomment this if you want to use the alternative method
+    // Route::get('/messages/users', [MessageController::class, 'getUsersWithLatestMessage']);
     Route::get('/messages/unread-count', [MessageController::class, 'getUnreadCount']);
     Route::get('/messages/conversation/{user}', [MessageController::class, 'getConversation'])->name('messages.conversation');
     Route::post('/messages/send/{user}', [MessageController::class, 'sendMessage'])->name('messages.send');
+    
+    // route for debugging
+    Route::get('/test-messages', function() {
+        return response()->json([
+            'users' => App\Models\User::where('id', '!=', auth()->id())->limit(5)->get()
+        ]);
+    });
 });
+
 
 require __DIR__ . '/auth.php';

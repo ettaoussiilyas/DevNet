@@ -29,8 +29,8 @@ class MessageController extends Controller
         // Mark all unread messages from this user as read
         Message::where('sender_id', $user->id)
             ->where('receiver_id', Auth::id())
-            ->where('read', false)
-            ->update(['read' => true]);
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
         
         // Get messages between the authenticated user and the selected user
         $messages = Message::where(function($query) use ($user) {
@@ -64,7 +64,7 @@ class MessageController extends Controller
         $message->sender_id = Auth::id();
         $message->receiver_id = $user->id;
         $message->content = $request->content;
-        $message->read = false;
+        $message->is_read = false;
         $message->save();
         
         // Load the sender relationship for broadcasting
@@ -85,7 +85,7 @@ class MessageController extends Controller
     public function getUnreadCount()
     {
         $count = Message::where('receiver_id', Auth::id())
-            ->where('read', false)
+            ->where('is_read', false)
             ->count();
         
         return response()->json(['count' => $count]);
@@ -124,10 +124,56 @@ class MessageController extends Controller
             })
             ->where('u.id', '!=', Auth::id())
             ->select('u.id', 'u.name', 'u.image', 'm.content as last_message', 'm.created_at as last_message_time', 
-                DB::raw('(SELECT COUNT(*) FROM messages WHERE sender_id = u.id AND receiver_id = ' . Auth::id() . ' AND `read` = 0) as unread_count'))
+                DB::raw('(SELECT COUNT(*) FROM messages WHERE sender_id = u.id AND receiver_id = ' . Auth::id() . ' AND `is_read` = 0) as unread_count'))
             ->orderByDesc('lm.latest_message_time')
             ->get();
         
         return response()->json(['users' => $users]);
+    }
+    
+    public function getUsers()
+    {
+        $currentUser = Auth::user();
+        
+        // Get only connected users
+        $connectedUsers = User::whereHas('connections', function($query) use ($currentUser) {
+            $query->where(function($q) use ($currentUser) {
+                $q->where('user_id', $currentUser->id)
+                  ->orWhere('connected_user_id', $currentUser->id);
+            })->where('status', 'accepted');
+        })->where('id', '!=', $currentUser->id)->get();
+        
+        $usersWithMessages = [];
+        
+        foreach ($connectedUsers as $user) {
+            // Get the last message between current user and this user
+            $lastMessage = Message::where(function($query) use ($currentUser, $user) {
+                $query->where('sender_id', $currentUser->id)
+                      ->where('receiver_id', $user->id);
+            })
+            ->orWhere(function($query) use ($currentUser, $user) {
+                $query->where('sender_id', $user->id)
+                      ->where('receiver_id', $currentUser->id);
+            })
+            ->latest()
+            ->first();
+            
+            // Count unread messages
+            $unreadCount = Message::where('sender_id', $user->id)
+                                 ->where('receiver_id', $currentUser->id)
+                                 ->where('is_read', false) // Changed from 'read' to 'is_read'
+                                 ->count();
+            
+            $usersWithMessages[] = [
+                'id' => $user->id,
+                'name' => $user->name,
+                'image' => $user->image,
+                'last_message' => $lastMessage ? $lastMessage->content : null,
+                'last_message_time' => $lastMessage ? $lastMessage->created_at : null,
+                'unread_count' => $unreadCount
+            ];
+        }
+        
+        return response()->json(['users' => $usersWithMessages]);
     }
 }

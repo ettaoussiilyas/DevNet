@@ -49,16 +49,53 @@
 
     @push('scripts')
     <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUsers();
+            updateMessageBadge();
+        });
+        
         let currentUserId = parseInt(document.getElementById('current-user-id').value);
         let selectedUserId = null;
         
-        // Load users with latest messages
-        function loadUsers() {
-            fetch('/messages/users')
+        // Function to update message badge count
+        function updateMessageBadge() {
+            fetch('/messages/unread-count')
                 .then(response => response.json())
                 .then(data => {
+                    const badge = document.getElementById('messages-badge');
+                    if (data.count > 0) {
+                        badge.textContent = data.count;
+                        badge.style.display = 'flex';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                });
+        }
+        
+        function loadUsers() {
+            console.log('Fetching users...');
+            fetch('/messages/users')
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Users data:', data);
                     const usersList = document.getElementById('users-list');
                     usersList.innerHTML = '';
+                    
+                    if (!data.users || data.users.length === 0) {
+                        usersList.innerHTML = `
+                            <div class="p-4 text-center text-gray-500">
+                                No connected users found. Connect with other users to start messaging.
+                            </div>
+                        `;
+                        return;
+                    }
                     
                     data.users.forEach(user => {
                         const lastMessage = user.last_message ? user.last_message : 'No messages yet';
@@ -199,6 +236,9 @@
                     // Otherwise just refresh the users list to show new message
                     loadUsers();
                     
+                    // Update message badge
+                    updateMessageBadge();
+                    
                     // Show notification
                     const notification = document.createElement('div');
                     notification.className = 'fixed bottom-4 right-4 bg-white shadow-lg rounded-lg p-4 max-w-sm';
@@ -224,9 +264,11 @@
         
         // Initial load
         loadUsers();
+        updateMessageBadge();
         
         // Refresh users list every 30 seconds
         setInterval(loadUsers, 30000);
+        setInterval(updateMessageBadge, 30000);
     </script>
     @endpush
 </x-app-layout>
