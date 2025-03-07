@@ -35,18 +35,7 @@
 
                 <!-- Search Bar -->
                 <div class="hidden md:flex items-center mr-4">
-                    <div class="relative">
-                        <input type="text"
-                               class="bg-[#E1EACD] text-[#8D77AB] text-sm rounded-full w-64 px-4 py-2 pl-10
-                                   focus:outline-none focus:ring-2 focus:ring-[#BAD8B6] focus:bg-[#F9F6E6]
-                                   placeholder-[#8D77AB]/60"
-                               placeholder="Search DevNet...">
-                        <div class="absolute left-3 top-2.5">
-                            <svg class="h-5 w-5 text-[#8D77AB]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                            </svg>
-                        </div>
-                    </div>
+                    @livewire('search-dropdown')
                 </div>
 
                 <!-- User Menu -->

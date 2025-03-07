@@ -6,6 +6,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\LikeController;
+use App\Illuminate\Http\Request;
 use App\Models\Post;
 use Illuminate\Support\Facades\Route;
 
@@ -78,5 +79,10 @@ Route::middleware('auth')->group(function () {
 
 });
 
+// Add this route with your other web routes
+Route::get('/search', function (Illuminate\Http\Request $request) {
+    return view('search.index', ['query' => $request->q]);
+})->name('search.index');
 
 require __DIR__ . '/auth.php';
+
