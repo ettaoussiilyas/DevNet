@@ -22,8 +22,8 @@
                                     :active="$route === '/' ? request()->is('/') : ($route === '/profile' ? request()->is('profile') : request()->routeIs($route))"
                                     class="px-3 py-2 rounded-full text-sm font-medium transition-all duration-200
                                     {{ ($route === '/' ? request()->is('/') : ($route === '/profile' ? request()->is('profile') : request()->routeIs($route)))
-                                    ? 'bg-[#BAD8B6] text-[#8D77AB]'
-                                    : 'text-[#F9F6E6] hover:bg-[#E1EACD] hover:text-[#8D77AB]' }}">
+                                    ? 'bg-[#BAD8B6] text-white'
+                                    : 'text-white hover:bg-[#E1EACD] hover:text-[#8D77AB]' }}">
                             {{ __($label) }}
                         </x-nav-link>
                     @endforeach

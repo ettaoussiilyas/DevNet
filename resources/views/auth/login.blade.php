@@ -38,6 +38,9 @@
                     {{ __('Forgot your password?') }}
                 </a>
             @endif
+            <a href="{{route('register')}}" class="px-4">
+                Create Account
+            </a>
 
             <x-primary-button class="ms-3">
                 {{ __('Log in') }}
