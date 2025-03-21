@@ -181,7 +181,7 @@
                                             <span class="likes-count">{{ $post->likes()->count() }}</span>
                                         </button>
                                     </form>
-                                    <button class="flex items-center space-x-2 text-gray-500 hover:text-lavender transition-colors duration-300">
+                                    <button class="flex items-center space-x-2 text-gray-500 hover:text-lavender transition-colors duration-300 toggle-comments" data-post-id="{{ $post->id }}">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
                                         </svg>
@@ -195,7 +195,7 @@
                                 </button>
                             </div>
 
-                            <div class="mt-4 border-t border-sage pt-4">
+                            <div class="mt-4 border-t border-sage pt-4 comments-section" id="comments-section-{{ $post->id }}" style="display: none;">
                                 <form class="comment-form" data-post-id="{{ $post->id }}">
                                     @csrf
                                     <div class="flex items-start space-x-3">
@@ -390,6 +390,20 @@
     // Add event listeners to existing delete buttons
     document.querySelectorAll('.delete-comment').forEach(button => {
         addDeleteEventListener(button);
+    });
+
+    // Toggle comments visibility
+    document.querySelectorAll('.toggle-comments').forEach(button => {
+        button.addEventListener('click', function() {
+            const postId = this.dataset.postId;
+            const commentsSection = document.getElementById(`comments-section-${postId}`);
+            
+            if (commentsSection.style.display === 'none') {
+                commentsSection.style.display = 'block';
+            } else {
+                commentsSection.style.display = 'none';
+            }
+        });
     });
 </script>
 </body>
