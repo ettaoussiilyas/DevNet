@@ -320,8 +320,8 @@
                     // Add the new comment to the list
                     const commentsContainer = this.nextElementSibling;
                     const commentHtml = `
-                        <div class="flex items-start space-x-3">
-                            <img src="${data.comment.user.image}" alt="User" class="w-8 h-8 rounded-full border border-mint"/>
+                        <div class="flex items-start space-x-3" id="comment-${data.comment.id}">
+                            <img src="/storage/${data.comment.user.image}" alt="User" class="w-8 h-8 rounded-full border border-mint"/>
                             <div class="flex-grow bg-sage bg-opacity-30 rounded-lg p-3">
                                 <div class="flex items-center justify-between">
                                     <div>
